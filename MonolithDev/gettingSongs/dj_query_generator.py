@@ -97,7 +97,8 @@ class DJQueryGenerator:
             "release_year": track.album.release_date[:4] if track.album.release_date else "Unknown",
             "duration": track.duration_formatted,
             "popularity": track.popularity,
-            "explicit": track.explicit
+            "explicit": track.explicit,
+            "spotify_uri": track.uri
         }
     
     def _create_system_prompt(self) -> str:
