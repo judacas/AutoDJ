@@ -68,7 +68,9 @@ class SpotifyPlaylistService:
         output_path.mkdir(parents=True, exist_ok=True)
 
         filepath = output_path / f"playlist_{playlist_id}.json"
-        filepath.write_text(playlist_response.model_dump_json(indent=2), encoding="utf-8")
+        filepath.write_text(
+            playlist_response.model_dump_json(indent=2), encoding="utf-8"
+        )
 
         logger.info(f"Playlist data saved to: {filepath}")
         return filepath
@@ -76,7 +78,12 @@ class SpotifyPlaylistService:
     def log_playlist(self, playlist_response: PlaylistResponse) -> None:
         """Pretty-print playlist contents using the configured logger."""
         logger.info("-" * 50)
-        for index, playlist_track in enumerate(self._iter_tracks(playlist_response), start=1):
+        for index, playlist_track in enumerate(
+            self._iter_tracks(playlist_response), start=1
+        ):
+            if playlist_track.track is None:
+                logger.info(f"{index:3d}. [No track data]")
+                continue
             logger.info(f"{index:3d}. {playlist_track.track.to_detailed_string()}")
         logger.info(f"Total tracks in playlist: {playlist_response.total}")
 
@@ -93,7 +100,9 @@ class SpotifyPlaylistService:
         last_response: Optional[dict] = None
 
         while True:
-            raw_results = self.client.playlist_tracks(playlist_id, limit=limit, offset=offset)
+            raw_results = self.client.playlist_tracks(
+                playlist_id, limit=limit, offset=offset
+            )
             if raw_results:
                 last_response = raw_results
                 items = raw_results.get("items") or []
@@ -145,7 +154,8 @@ def save_playlist_to_json(
 
 
 def log_playlist_songs(
-    playlist_response: PlaylistResponse, service: Optional[SpotifyPlaylistService] = None
+    playlist_response: PlaylistResponse,
+    service: Optional[SpotifyPlaylistService] = None,
 ) -> None:
     """Compatibility wrapper around :meth:`SpotifyPlaylistService.log_playlist`."""
     service = service or SpotifyPlaylistService()
@@ -157,7 +167,9 @@ def main() -> None:
     if len(sys.argv) != 2:
         logger.error("Usage: python get_playlist_songs.py <playlist_uri>")
         logger.error("\nExamples:")
-        logger.error("  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
+        logger.error(
+            "  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M"
+        )
         logger.error(
             "  python get_playlist_songs.py https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
         )

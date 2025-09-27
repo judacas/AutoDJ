@@ -1,0 +1,500 @@
+{
+  "href": "https://api.spotify.com/v1/playlists/795EZTgLyu5P4n7Y75EO4G/tracks?offset=0&limit=100&additional_types=track",
+  "items": [
+    {
+      "track": {
+        "name": "Get You (feat. Kali Uchis)",
+        "id": "2uP6t2J5MEwhr9rDkAAzwh",
+        "artists": [
+          {
+            "name": "Daniel Caesar",
+            "id": "20wkVLutqVOYrc0kxFs7rA",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+            },
+            "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+            "type": "artist",
+            "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+          },
+          {
+            "name": "Kali Uchis",
+            "id": "1U1el3k54VvEUzo3ybLPlM",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1U1el3k54VvEUzo3ybLPlM"
+            },
+            "href": "https://api.spotify.com/v1/artists/1U1el3k54VvEUzo3ybLPlM",
+            "type": "artist",
+            "uri": "spotify:artist:1U1el3k54VvEUzo3ybLPlM"
+          }
+        ],
+        "album": {
+          "name": "Freudian",
+          "id": "4E1XUBMTpLO7GpBzUo65Jp",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Daniel Caesar",
+              "id": "20wkVLutqVOYrc0kxFs7rA",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+              },
+              "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+              "type": "artist",
+              "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/4E1XUBMTpLO7GpBzUo65Jp"
+          },
+          "href": "https://api.spotify.com/v1/albums/4E1XUBMTpLO7GpBzUo65Jp",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27305ac3e026324594a31fad7fb",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0205ac3e026324594a31fad7fb",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485105ac3e026324594a31fad7fb",
+              "width": 64
+            }
+          ],
+          "release_date": "2017-08-25",
+          "release_date_precision": "day",
+          "total_tracks": 10,
+          "type": "album",
+          "uri": "spotify:album:4E1XUBMTpLO7GpBzUo65Jp"
+        },
+        "duration_ms": 278179,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "TCACR1690004"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/2uP6t2J5MEwhr9rDkAAzwh"
+        },
+        "href": "https://api.spotify.com/v1/tracks/2uP6t2J5MEwhr9rDkAAzwh",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 83,
+        "preview_url": null,
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:2uP6t2J5MEwhr9rDkAAzwh"
+      },
+      "added_at": "2025-09-27T14:02:17Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Best Part (feat. H.E.R.)",
+        "id": "1Q7EgiMOuwDcB0PJC6AzON",
+        "artists": [
+          {
+            "name": "Daniel Caesar",
+            "id": "20wkVLutqVOYrc0kxFs7rA",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+            },
+            "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+            "type": "artist",
+            "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+          },
+          {
+            "name": "H.E.R.",
+            "id": "3Y7RZ31TRPVadSFVy1o8os",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/3Y7RZ31TRPVadSFVy1o8os"
+            },
+            "href": "https://api.spotify.com/v1/artists/3Y7RZ31TRPVadSFVy1o8os",
+            "type": "artist",
+            "uri": "spotify:artist:3Y7RZ31TRPVadSFVy1o8os"
+          }
+        ],
+        "album": {
+          "name": "Freudian",
+          "id": "4E1XUBMTpLO7GpBzUo65Jp",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Daniel Caesar",
+              "id": "20wkVLutqVOYrc0kxFs7rA",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+              },
+              "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+              "type": "artist",
+              "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/4E1XUBMTpLO7GpBzUo65Jp"
+          },
+          "href": "https://api.spotify.com/v1/albums/4E1XUBMTpLO7GpBzUo65Jp",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27305ac3e026324594a31fad7fb",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0205ac3e026324594a31fad7fb",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485105ac3e026324594a31fad7fb",
+              "width": 64
+            }
+          ],
+          "release_date": "2017-08-25",
+          "release_date_precision": "day",
+          "total_tracks": 10,
+          "type": "album",
+          "uri": "spotify:album:4E1XUBMTpLO7GpBzUo65Jp"
+        },
+        "duration_ms": 209831,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "CADDS1700022"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1Q7EgiMOuwDcB0PJC6AzON"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1Q7EgiMOuwDcB0PJC6AzON",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 85,
+        "preview_url": null,
+        "track_number": 2,
+        "type": "track",
+        "uri": "spotify:track:1Q7EgiMOuwDcB0PJC6AzON"
+      },
+      "added_at": "2025-09-27T14:02:19Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Best Part (feat. H.E.R.)",
+        "id": "1Q7EgiMOuwDcB0PJC6AzON",
+        "artists": [
+          {
+            "name": "Daniel Caesar",
+            "id": "20wkVLutqVOYrc0kxFs7rA",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+            },
+            "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+            "type": "artist",
+            "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+          },
+          {
+            "name": "H.E.R.",
+            "id": "3Y7RZ31TRPVadSFVy1o8os",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/3Y7RZ31TRPVadSFVy1o8os"
+            },
+            "href": "https://api.spotify.com/v1/artists/3Y7RZ31TRPVadSFVy1o8os",
+            "type": "artist",
+            "uri": "spotify:artist:3Y7RZ31TRPVadSFVy1o8os"
+          }
+        ],
+        "album": {
+          "name": "Freudian",
+          "id": "4E1XUBMTpLO7GpBzUo65Jp",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Daniel Caesar",
+              "id": "20wkVLutqVOYrc0kxFs7rA",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+              },
+              "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+              "type": "artist",
+              "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/4E1XUBMTpLO7GpBzUo65Jp"
+          },
+          "href": "https://api.spotify.com/v1/albums/4E1XUBMTpLO7GpBzUo65Jp",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27305ac3e026324594a31fad7fb",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0205ac3e026324594a31fad7fb",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485105ac3e026324594a31fad7fb",
+              "width": 64
+            }
+          ],
+          "release_date": "2017-08-25",
+          "release_date_precision": "day",
+          "total_tracks": 10,
+          "type": "album",
+          "uri": "spotify:album:4E1XUBMTpLO7GpBzUo65Jp"
+        },
+        "duration_ms": 209831,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "CADDS1700022"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1Q7EgiMOuwDcB0PJC6AzON"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1Q7EgiMOuwDcB0PJC6AzON",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 85,
+        "preview_url": null,
+        "track_number": 2,
+        "type": "track",
+        "uri": "spotify:track:1Q7EgiMOuwDcB0PJC6AzON"
+      },
+      "added_at": "2025-09-27T14:02:44Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Pink + White",
+        "id": "3xKsf9qdS1CyvXSMEid6g8",
+        "artists": [
+          {
+            "name": "Frank Ocean",
+            "id": "2h93pZq0e7k5yf4dywlkpM",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/2h93pZq0e7k5yf4dywlkpM"
+            },
+            "href": "https://api.spotify.com/v1/artists/2h93pZq0e7k5yf4dywlkpM",
+            "type": "artist",
+            "uri": "spotify:artist:2h93pZq0e7k5yf4dywlkpM"
+          }
+        ],
+        "album": {
+          "name": "Blonde",
+          "id": "3mH6qwIy9crq0I9YQbOuDf",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Frank Ocean",
+              "id": "2h93pZq0e7k5yf4dywlkpM",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/2h93pZq0e7k5yf4dywlkpM"
+              },
+              "href": "https://api.spotify.com/v1/artists/2h93pZq0e7k5yf4dywlkpM",
+              "type": "artist",
+              "uri": "spotify:artist:2h93pZq0e7k5yf4dywlkpM"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/3mH6qwIy9crq0I9YQbOuDf"
+          },
+          "href": "https://api.spotify.com/v1/albums/3mH6qwIy9crq0I9YQbOuDf",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e02c5649add07ed3720be9d5526",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d00004851c5649add07ed3720be9d5526",
+              "width": 64
+            }
+          ],
+          "release_date": "2016-08-20",
+          "release_date_precision": "day",
+          "total_tracks": 17,
+          "type": "album",
+          "uri": "spotify:album:3mH6qwIy9crq0I9YQbOuDf"
+        },
+        "duration_ms": 184516,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "QZ5C81600003"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3xKsf9qdS1CyvXSMEid6g8"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3xKsf9qdS1CyvXSMEid6g8",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 86,
+        "preview_url": null,
+        "track_number": 3,
+        "type": "track",
+        "uri": "spotify:track:3xKsf9qdS1CyvXSMEid6g8"
+      },
+      "added_at": "2025-09-27T14:03:07Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Snooze",
+        "id": "4iZ4pt7kvcaH6Yo8UoZ4s2",
+        "artists": [
+          {
+            "name": "SZA",
+            "id": "7tYKF4w9nC0nq9CsPZTHyP",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/7tYKF4w9nC0nq9CsPZTHyP"
+            },
+            "href": "https://api.spotify.com/v1/artists/7tYKF4w9nC0nq9CsPZTHyP",
+            "type": "artist",
+            "uri": "spotify:artist:7tYKF4w9nC0nq9CsPZTHyP"
+          }
+        ],
+        "album": {
+          "name": "SOS",
+          "id": "07w0rG5TETcyihsEIZR3qG",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "SZA",
+              "id": "7tYKF4w9nC0nq9CsPZTHyP",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/7tYKF4w9nC0nq9CsPZTHyP"
+              },
+              "href": "https://api.spotify.com/v1/artists/7tYKF4w9nC0nq9CsPZTHyP",
+              "type": "artist",
+              "uri": "spotify:artist:7tYKF4w9nC0nq9CsPZTHyP"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/07w0rG5TETcyihsEIZR3qG"
+          },
+          "href": "https://api.spotify.com/v1/albums/07w0rG5TETcyihsEIZR3qG",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27370dbc9f47669d120ad874ec1",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0270dbc9f47669d120ad874ec1",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485170dbc9f47669d120ad874ec1",
+              "width": 64
+            }
+          ],
+          "release_date": "2022-12-09",
+          "release_date_precision": "day",
+          "total_tracks": 23,
+          "type": "album",
+          "uri": "spotify:album:07w0rG5TETcyihsEIZR3qG"
+        },
+        "duration_ms": 201800,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USRC12204591"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/4iZ4pt7kvcaH6Yo8UoZ4s2"
+        },
+        "href": "https://api.spotify.com/v1/tracks/4iZ4pt7kvcaH6Yo8UoZ4s2",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 85,
+        "preview_url": null,
+        "track_number": 8,
+        "type": "track",
+        "uri": "spotify:track:4iZ4pt7kvcaH6Yo8UoZ4s2"
+      },
+      "added_at": "2025-09-27T14:03:36Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    }
+  ],
+  "limit": 100,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 5
+}
