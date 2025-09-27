@@ -126,7 +126,9 @@ class Playlist(BaseModel):
     owner: Optional[dict] = Field(None, description="Playlist owner information")
     public: Optional[bool] = Field(None, description="Whether playlist is public")
     snapshot_id: Optional[str] = Field(None, description="Playlist snapshot ID")
-    tracks: Optional[List[PlaylistTrack]] = Field(None, description="Playlist tracks")
+    tracks: Optional["PlaylistResponse"] = Field(
+        None, description="Paginated playlist tracks response"
+    )
     total_tracks: Optional[int] = Field(None, description="Total number of tracks")
     type: Optional[str] = Field(None, description="Object type (usually 'playlist')")
     uri: Optional[str] = Field(None, description="Spotify URI for the playlist")
@@ -135,8 +137,10 @@ class Playlist(BaseModel):
     def track_count(self) -> int:
         """Return the number of tracks in the playlist."""
         if self.tracks:
-            return len([t for t in self.tracks if t.track is not None])
-        return self.total_tracks or 0
+            # Count non-null tracks from items
+            return len([item for item in self.tracks.items if item.track is not None])
+        # Fall back to total from tracks response or total_tracks field
+        return (self.tracks.total if self.tracks else None) or self.total_tracks or 0
 
 
 class PlaylistResponse(BaseModel):
