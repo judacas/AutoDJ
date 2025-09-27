@@ -92,22 +92,19 @@ def save_playlist_to_json(playlist_response, playlist_id, output_dir="output"):
 
 def print_playlist_songs(playlist_response):
     """
-    Print playlist songs in a formatted way.
+    Print playlist songs in a formatted way using Pydantic's toString methods.
 
     Args:
         playlist_response (PlaylistResponse): The playlist response to print
     """
     print("-" * 50)
 
-    # Print each song using Pydantic models
+    # Print each song using Pydantic models' toString methods
     for i, playlist_track in enumerate(playlist_response.items, 1):
         if playlist_track.track:
-            track = playlist_track.track
-
-            print(f"{i:3d}. {track.name}")
-            print(f"     Artist(s): {track.artist_names}")
-            print(f"     Album: {track.album.name}")
-            print(f"     Duration: {track.duration_formatted}")
+            # Use the detailed string method for better formatting
+            track_details = playlist_track.track.to_detailed_string()
+            print(f"{i:3d}. {track_details}")
             print()
 
     # Print summary
