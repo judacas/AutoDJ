@@ -75,7 +75,7 @@
             "label": "AutoDJ: Sort Imports",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "isort", "autodj/", "tests/"],
+            "args": ["-m", "isort", "MonolithDev/", "graphStuff/", "tests/"],
             "group": "build",
             "presentation": {
                 "echo": true,
