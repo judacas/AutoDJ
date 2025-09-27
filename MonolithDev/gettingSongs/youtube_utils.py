@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 """
-Script to download all songs from a saved Spotify playlist JSON file using YouTube via yt-dlp.
-Usage: python download_all_songs.py <playlist_id>
-
-The playlist JSON file must exist in the output/ directory with naming scheme: playlist_{playlist_id}.json
-Downloads are idempotent - already downloaded tracks will be skipped.
+Shared utilities for YouTube downloading functionality.
+Contains common functions used by both song and mix downloaders.
 """
 
-import sys
 import json
 from pathlib import Path
+from enum import Enum
 import yt_dlp
 from models import PlaylistResponse, PlaylistTrack, Track
 from logging_config import get_module_logger
 
 # Set up logger for this module
 logger = get_module_logger(__name__)
+from models import PlaylistResponse, Track
+
+
+class QueryType(str, Enum):
+    """Pydantic-compatible enum for different types of YouTube search queries."""
+
+    SONG = "song"
+    MIX = "mix"
 
 
 def get_all_tracks_from_file(playlist_id):
@@ -56,7 +61,9 @@ def get_all_tracks_from_file(playlist_id):
             if playlist_track.track:
                 tracks.append(playlist_track.track)
             else:
-                logger.debug(f"Skipping unavailable track at position {len(tracks) + 1}")
+                logger.debug(
+                    f"Skipping unavailable track at position {len(tracks) + 1}"
+                )
 
         if not tracks:
             logger.warning("No available tracks found in playlist.")
@@ -73,18 +80,41 @@ def get_all_tracks_from_file(playlist_id):
         return None
 
 
-def search_youtube_for_track(track):
+def create_search_query(track, query_type=QueryType.SONG):
+    """
+    Create a search query for YouTube based on track and query type.
+
+    Args:
+        track (Track): The track to search for
+        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
+
+    Returns:
+        str: Formatted search query
+    """
+    if query_type == QueryType.SONG:
+        # Create search query to prefer official audio, avoid music videos and karaoke
+        return f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert"
+    elif query_type == QueryType.MIX:
+        # Placeholder for mix search query - can be customized later
+        return f"{track.artist_names} - {track.name} mix"
+    else:
+        raise ValueError(
+            f"Unknown query_type: {query_type}. Must be QueryType.SONG or QueryType.MIX"
+        )
+
+
+def search_youtube_for_track(track, query_type=QueryType.SONG):
     """
     Search YouTube for a track and return the best match URL.
 
     Args:
         track (Track): The track to search for
+        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
 
     Returns:
         str: YouTube URL of the best match, or None if not found
     """
-    # Create search query to prefer official audio, avoid music videos and karaoke
-    search_query = f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert"
+    search_query = create_search_query(track, query_type)
 
     logger.info(f"Searching YouTube for: {search_query}")
 
@@ -249,9 +279,20 @@ def main():
         logger.error("Run get_playlist_songs.py first to generate the playlist file.")
         sys.exit(1)
 
-    playlist_id = sys.argv[1]
+
+def download_tracks_from_playlist(playlist_id, query_type=QueryType.SONG):
+    """
+    Download all tracks from a playlist using the specified query type.
+
+    Args:
+        playlist_id (str): Spotify playlist ID
+        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
 
     logger.info(f"Reading all songs from playlist file: playlist_{playlist_id}.json")
+    Returns:
+        dict: Summary of download results
+    """
+    print(f"Reading all songs from playlist file: playlist_{playlist_id}.json")
 
     # Get all tracks from the playlist file
     tracks = get_all_tracks_from_file(playlist_id)
@@ -269,7 +310,7 @@ def main():
         logger.info(f"\n--- Track {i}/{len(tracks)}: {track} ---")
 
         # Search YouTube for the track
-        video_url = search_youtube_for_track(track)
+        video_url = search_youtube_for_track(track, query_type)
         if not video_url:
             logger.error(f"❌ Failed to find track on YouTube: {track}")
             failed_downloads += 1
@@ -304,3 +345,27 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # Return summary
+    return {
+        "total_tracks": len(tracks),
+        "successful_downloads": successful_downloads,
+        "skipped_downloads": skipped_downloads,
+        "failed_downloads": failed_downloads,
+    }
+
+
+def print_download_summary(summary):
+    """
+    Print a formatted download summary.
+
+    Args:
+        summary (dict): Summary dictionary from download_tracks_from_playlist
+    """
+    print(f"\n{'='*50}")
+    print(f"DOWNLOAD SUMMARY")
+    print(f"{'='*50}")
+    print(f"Total tracks: {summary['total_tracks']}")
+    print(f"✅ Successfully downloaded: {summary['successful_downloads']}")
+    print(f"⏭️  Skipped (already downloaded): {summary['skipped_downloads']}")
+    print(f"❌ Failed: {summary['failed_downloads']}")
+    print(f"{'='*50}")

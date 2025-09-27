@@ -1,0 +1,50 @@
+# AutoDJ Project Rules
+
+## Virtual Environment Setup
+- ALWAYS activate the virtual environment before running Python commands or testing imports
+- Use `.venv\Scripts\activate.bat` (Windows) or `.venv/bin/activate` (Linux/Mac)
+- The virtual environment contains all required dependencies (yt_dlp, pydantic, etc.)
+- Without activation, imports will fail with `ModuleNotFoundError`
+
+## Project Structure
+- Root directory: `C:\Users\wasab\Documents\code\Hackathons\AutoDJ`
+- Main scripts: `MonolithDev\gettingSongs\`
+- Virtual environment: `.venv\`
+
+## Testing Commands
+- Always run from the correct directory: `cd MonolithDev\gettingSongs`
+- Test imports: `python -c "from youtube_utils import QueryType; print('Success!')"`
+- Run scripts: `python download_tracks.py <playlist_id> song`
+
+## Code Standards
+- Use Pydantic models for data validation (already implemented)
+- Use Pydantic-compatible enums (QueryType inherits from str, Enum)
+- Follow existing codebase patterns for consistency
+
+## Git Workflow
+- NEVER automatically stage changes with `git add` or `git commit`
+- Always show changes to the user first before staging
+- Let the user review and decide what to stage/commit
+- Use `git status` to show current state, but don't stage files automatically
+- User wants to see what changed before it gets staged
+
+## Before Testing Any Code
+1. Activate virtual environment: `.venv\Scripts\activate.bat`
+2. Navigate to root directory: `AutoDJ`
+3. Then run Python commands from their relative path to root AutoDJ/ (do not include AutoDJ/)
+
+## Common Commands
+```bash
+# Activate virtual environment
+.venv\Scripts\activate.bat
+
+# Navigate to scripts directory
+cd MonolithDev\gettingSongs
+
+# Test imports
+python -c "from youtube_utils import QueryType; print('Import successful!')"
+
+# Run download script
+python download_tracks.py <playlist_id> song
+python download_tracks.py <playlist_id> mix
+```
