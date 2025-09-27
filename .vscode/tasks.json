@@ -19,7 +19,7 @@
             "label": "AutoDJ: Run Tests",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "pytest", "tests/", "-v", "--cov=MonolithDev", "--cov=graphStuff", "--cov-report=html"],
+            "args": ["-m", "pytest", ".", "-v", "--cov=MonolithDev", "--cov=graphStuff", "--cov-report=html"],
             "group": "test",
             "presentation": {
                 "echo": true,
@@ -33,7 +33,7 @@
             "label": "AutoDJ: Lint Code",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "flake8", "autodj/", "tests/"],
+            "args": ["-m", "flake8", "MonolithDev/", "graphStuff/"],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -47,7 +47,7 @@
             "label": "AutoDJ: Type Check",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "mypy", "autodj/"],
+            "args": ["-m", "mypy", "MonolithDev/"],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -61,7 +61,7 @@
             "label": "AutoDJ: Format Code",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "black", "autodj/", "tests/"],
+            "args": ["-m", "black", "MonolithDev/", "graphStuff/"],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -75,7 +75,7 @@
             "label": "AutoDJ: Sort Imports",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "isort", "MonolithDev/", "graphStuff/", "tests/"],
+            "args": ["-m", "isort", "MonolithDev/", "graphStuff/"],
             "group": "build",
             "presentation": {
                 "echo": true,

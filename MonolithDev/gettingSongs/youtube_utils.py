@@ -90,9 +90,7 @@ def extract_youtube_id(video_url: str) -> str:
     return "unknown_id"
 
 
-def is_track_downloaded(
-    youtube_id: str, output_dir: Path | str = "downloads"
-) -> bool:
+def is_track_downloaded(youtube_id: str, output_dir: Path | str = "downloads") -> bool:
     """Determine whether a YouTube video has already been downloaded."""
 
     output_path = Path(output_dir)
@@ -158,7 +156,9 @@ class YouTubeDownloader:
         if not tracks:
             raise ValueError("Failed to read tracks from playlist file.")
 
-        per_track_limit = max_results_per_track or (10 if query_type == QueryType.MIX else 1)
+        per_track_limit = max_results_per_track or (
+            10 if query_type == QueryType.MIX else 1
+        )
         summary = DownloadSummary(total_tracks=len(tracks))
 
         for index, track in enumerate(tracks, start=1):
@@ -238,10 +238,10 @@ class YouTubeDownloader:
                 try:
                     self._mix_generator = DJQueryGenerator()
                 except Exception as exc:
-                    logger.error(
-                        "Unable to initialise DJ mix query generator: %s", exc
-                    )
-                    raise RuntimeError("Missing configuration for DJ mix queries") from exc
+                    logger.error("Unable to initialise DJ mix query generator: %s", exc)
+                    raise RuntimeError(
+                        "Missing configuration for DJ mix queries"
+                    ) from exc
             return self._mix_generator.generate_queries(track).queries
 
         raise ValueError(f"Unknown query_type: {query_type}")
@@ -285,7 +285,9 @@ def download_tracks_from_playlist(
     return summary.as_dict()
 
 
-def print_download_summary(summary: dict | DownloadSummary, label: str = "Tracks") -> None:
+def print_download_summary(
+    summary: dict | DownloadSummary, label: str = "Tracks"
+) -> None:
     """Log a download summary to stdout."""
 
     if isinstance(summary, DownloadSummary):

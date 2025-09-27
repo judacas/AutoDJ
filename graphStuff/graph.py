@@ -7,10 +7,12 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
+
 @dataclass
 class SongNode:
     song_id: str
     metadata: dict = field(default_factory=dict)
+
 
 @dataclass
 class TransitionEdge:
@@ -21,17 +23,30 @@ class TransitionEdge:
     confidence: float
     extra: dict = field(default_factory=dict)
 
+
 class DirectedSongGraph:
     def __init__(self):
         self.nodes: Dict[str, SongNode] = {}
-        self.edges: Dict[str, List[TransitionEdge]] = {}  # source song_id -> list of edges
+        self.edges: Dict[
+            str, List[TransitionEdge]
+        ] = {}  # source song_id -> list of edges
 
     def add_song(self, song_id: str, metadata: Optional[dict] = None):
         if song_id not in self.nodes:
             self.nodes[song_id] = SongNode(song_id, metadata or {})
 
-    def add_transition(self, source: str, target: str, timestamp: datetime, mix_id: str, confidence: float, extra: Optional[dict] = None):
-        edge = TransitionEdge(source, target, timestamp, mix_id, confidence, extra or {})
+    def add_transition(
+        self,
+        source: str,
+        target: str,
+        timestamp: datetime,
+        mix_id: str,
+        confidence: float,
+        extra: Optional[dict] = None,
+    ):
+        edge = TransitionEdge(
+            source, target, timestamp, mix_id, confidence, extra or {}
+        )
         if source not in self.edges:
             self.edges[source] = []
         self.edges[source].append(edge)

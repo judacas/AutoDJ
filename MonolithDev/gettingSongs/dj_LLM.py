@@ -6,9 +6,10 @@ Generates relevant search queries for DJ mixes based on song metadata.
 
 import os
 from typing import List, Optional
-from pydantic import BaseModel, Field
-from openai import OpenAI
+
 from models import Track
+from openai import OpenAI
+from pydantic import BaseModel, Field
 
 
 class DJMixQueries(BaseModel):
@@ -37,7 +38,9 @@ class DJQueryGenerator:
         Args:
             api_key: OpenAI API key. If None, will look for OPENAI_API_KEY environment variable.
         """
-        import config
+        from config import init_config
+
+        init_config()  # Ensure environment is loaded
 
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:

@@ -1,0 +1,30 @@
+[flake8]
+max-line-length = 88
+# Set a higher limit for docstrings and comments
+max-doc-length = 120
+extend-ignore = 
+    # E203: whitespace before ':' (conflicts with black)
+    E203,
+    # W503: line break before binary operator (conflicts with black) 
+    W503
+# Allow longer lines in specific contexts
+per-file-ignores =
+    # Allow longer docstrings and string literals in these files
+    */dj_LLM.py:E501,
+    */download_tracks.py:E501,
+    # Allow longer docstrings in these files  
+    */get_playlist_songs.py:E501,
+    */models.py:E501,
+    # Allow longer f-strings and error messages
+    */playlist_pipeline.py:E501,
+    */youtube_utils.py:E501
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .mypy_cache,
+    .pytest_cache

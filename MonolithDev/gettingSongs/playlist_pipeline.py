@@ -51,7 +51,9 @@ class PlaylistPipeline:
             raise ValueError("Unable to fetch playlist from Spotify")
 
         playlist_id = self.spotify_service.extract_playlist_id(playlist_uri)
-        playlist_path = self.spotify_service.save_playlist_to_json(playlist, playlist_id)
+        playlist_path = self.spotify_service.save_playlist_to_json(
+            playlist, playlist_id
+        )
 
         summaries: Dict[QueryType, dict] = {}
         if download_songs:

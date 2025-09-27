@@ -50,7 +50,9 @@ def get_playlist_url() -> str:
             print("Please enter a URL")
             continue
 
-        if "spotify.com/playlist/" not in url and not url.startswith("spotify:playlist:"):
+        if "spotify.com/playlist/" not in url and not url.startswith(
+            "spotify:playlist:"
+        ):
             print("❌ Please enter a valid Spotify playlist URL")
             continue
 

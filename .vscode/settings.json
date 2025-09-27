@@ -1,0 +1,20 @@
+{
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/MonolithDev",
+        "${workspaceFolder}/MonolithDev/gettingSongs",
+        "${workspaceFolder}/graphStuff"
+    ],
+    "python.analysis.autoSearchPaths": true,
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length=88"],
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length=88"],
+    "python.linting.pylintEnabled": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    }
+}
