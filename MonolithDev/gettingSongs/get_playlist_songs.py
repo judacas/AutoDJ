@@ -150,9 +150,9 @@ def main():
     """Main function to handle command line arguments."""
     if len(sys.argv) != 2:
         logger.error("Usage: python get_playlist_songs.py <playlist_uri>")
-        logger.info("\nExamples:")
-        logger.info("  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
-        logger.info(
+        logger.error("\nExamples:")
+        logger.error("  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
+        logger.error(
             "  python get_playlist_songs.py https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
         )
         sys.exit(1)
