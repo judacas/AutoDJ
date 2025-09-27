@@ -16,11 +16,7 @@ Examples:
 """
 
 import sys
-from youtube_utils import (
-    download_tracks_from_playlist,
-    print_download_summary,
-    QueryType,
-)
+from youtube_utils import QueryType, YouTubeDownloader, print_download_summary
 
 
 def main():
@@ -50,15 +46,15 @@ def main():
         print("  mix  - Downloads mixes that may include the songs")
         sys.exit(1)
 
-    # Download tracks using the shared utility function
-    summary = download_tracks_from_playlist(playlist_id, query_type=query_type)
-
-    if summary is None:
-        print("Failed to download tracks.")
+    downloader = YouTubeDownloader()
+    try:
+        summary = downloader.download_playlist(playlist_id, query_type)
+    except ValueError as exc:
+        print(f"Failed to download tracks: {exc}")
         sys.exit(1)
 
     # Print the download summary
-    print_download_summary(summary)
+    print_download_summary(summary, label=query_type.value)
 
 
 if __name__ == "__main__":

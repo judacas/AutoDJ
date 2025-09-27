@@ -1,258 +1,115 @@
 #!/usr/bin/env python3
-"""
-Shared utilities for YouTube downloading functionality.
-Contains common functions used by both song and mix downloaders.
-"""
+"""Shared utilities for downloading playlist tracks and mixes from YouTube."""
+
+from __future__ import annotations
 
 import json
-from pathlib import Path
+import re
+from dataclasses import dataclass
 from enum import Enum
-import yt_dlp
-from dj_LLM import DJQueryGenerator
-from models import PlaylistResponse
-from logging_config import get_module_logger
-import sys
+from pathlib import Path
+from typing import List, Optional
 
-# Set up logger for this module
-logger = get_module_logger(__name__)
+import yt_dlp
+
+from dj_LLM import DJQueryGenerator
+from logging_config import get_module_logger
 from models import PlaylistResponse, Track
+
+logger = get_module_logger(__name__)
 
 
 class QueryType(str, Enum):
-    """Pydantic-compatible enum for different types of YouTube search queries."""
+    """Types of supported search strategies."""
 
     SONG = "song"
     MIX = "mix"
 
 
-def get_all_tracks_from_file(playlist_id):
-    """
-    Fetch all tracks from a saved playlist JSON file.
+@dataclass
+class DownloadSummary:
+    """Keep track of download metrics for reporting."""
 
-    Args:
-        playlist_id (str): Spotify playlist ID (e.g., 5evvXuuNDgAHbPDmojLZgD)
+    total_tracks: int
+    requested_downloads: int = 0
+    successful_downloads: int = 0
+    skipped_downloads: int = 0
+    failed_downloads: int = 0
 
-    Returns:
-        List[Track]: List of all tracks from the playlist, or None if error
-    """
-    try:
-        # Construct file path
-        file_path = Path("output") / f"playlist_{playlist_id}.json"
-
-        if not file_path.exists():
-            logger.error(f"Playlist file not found: {file_path}")
-            logger.info(
-                "Make sure you have run get_playlist_songs.py first to generate the playlist file."
-            )
-            return None
-
-        # Read and parse the JSON file
-        with open(file_path, "r", encoding="utf-8") as f:
-            playlist_data = json.load(f)
-
-        # Parse using Pydantic model
-        playlist_response = PlaylistResponse.model_validate(playlist_data)
-
-        if not playlist_response.items:
-            logger.warning("No songs found in this playlist file.")
-            return None
-
-        # Extract all available tracks
-        tracks = []
-        for playlist_track in playlist_response.items:
-            if playlist_track.track:
-                tracks.append(playlist_track.track)
-            else:
-                logger.debug(
-                    f"Skipping unavailable track at position {len(tracks) + 1}"
-                )
-
-        if not tracks:
-            logger.warning("No available tracks found in playlist.")
-            return None
-
-        logger.info(f"Found {len(tracks)} tracks in playlist")
-        return tracks
-
-    except json.JSONDecodeError as e:
-        logger.error(f"Error parsing JSON file: {e}")
-        return None
-    except Exception as e:
-        logger.error(f"Error reading playlist file: {e}")
-        return None
+    def as_dict(self) -> dict:
+        return {
+            "total_tracks": self.total_tracks,
+            "requested_downloads": self.requested_downloads,
+            "successful_downloads": self.successful_downloads,
+            "skipped_downloads": self.skipped_downloads,
+            "failed_downloads": self.failed_downloads,
+        }
 
 
-def create_search_queries(track, query_type=QueryType.SONG) -> list[str]:
-    """
-    Create a search query for YouTube based on track and query type.
+def get_all_tracks_from_file(playlist_id: str) -> Optional[List[Track]]:
+    """Load playlist tracks that were previously persisted to JSON."""
 
-    Args:
-        track (Track): The track to search for
-        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
-
-    Returns:
-        str: Formatted search query
-    """
-    if query_type == QueryType.SONG:
-        # TODO: Improve search queries - currently finds funky results sometimes
-        # (e.g., clean versions instead of normal, still gets covers/remixes occasionally)
-        # Consider:
-        # - Adding more exclusion terms (-clean -radio -edit -version -remaster)
-        # - Prioritizing official channels/verified artists
-        # - Using multiple search strategies with fallbacks
-        # - Analyzing video duration to match track length
-        # - Checking video metadata for better matching
-
-        return [
-            f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
-        ]
-
-    elif query_type == QueryType.MIX:
-        query_generator = DJQueryGenerator()
-        return query_generator.generate_queries(track).queries
-    else:
-        raise ValueError(
-            f"Unknown query_type: {query_type}. Must be QueryType.SONG or QueryType.MIX"
+    file_path = Path("output") / f"playlist_{playlist_id}.json"
+    if not file_path.exists():
+        logger.error(f"Playlist file not found: {file_path}")
+        logger.info(
+            "Make sure you have run get_playlist_songs.py first to generate the playlist file."
         )
+        return None
+
+    try:
+        playlist_data = json.loads(file_path.read_text(encoding="utf-8"))
+        playlist_response = PlaylistResponse.model_validate(playlist_data)
+    except json.JSONDecodeError as exc:
+        logger.error(f"Error parsing JSON file: {exc}")
+        return None
+    except Exception as exc:
+        logger.error(f"Error reading playlist file: {exc}")
+        return None
+
+    tracks = [item.track for item in playlist_response.items if item.track is not None]
+    if not tracks:
+        logger.warning("No available tracks found in playlist.")
+        return None
+
+    logger.info(f"Found {len(tracks)} tracks in playlist")
+    return tracks
 
 
-def search_youtube_for_track(track, query_type=QueryType.SONG):
-    """
-    Search YouTube for a track and return the best match URL.
+def extract_youtube_id(video_url: str) -> str:
+    """Extract a YouTube video ID from a URL."""
 
-    Args:
-        track (Track): The track to search for
-        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
-
-    Returns:
-        str: YouTube URL of the best match, or None if not found
-    """
-    search_queries = create_search_queries(track, query_type)
-
-    logger.info(
-        f"Searching YouTube with {len(search_queries)} queries: {search_queries}"
-    )
-
-    # Configure yt-dlp for search
-    ydl_opts = {
-        "quiet": False,
-        "no_warnings": False,
-        "extract_flat": True,
-        "default_search": "ytsearch1:",  # Search YouTube and get top result
-    }
-    # Try each query until we find a result
-    for i, search_query in enumerate(search_queries):
-        try:
-            logger.info(f"Trying query {i+1}/{len(search_queries)}: {search_query}")
-
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                # Search for the track
-                search_url = f"ytsearch1:{search_query}"
-                info = ydl.extract_info(search_url, download=False)
-
-                if info and "entries" in info and info["entries"]:
-                    # Get the first (best) result
-                    best_match = info["entries"][0]
-                    video_url = best_match.get("webpage_url") or best_match.get("url")
-
-                    if video_url:
-                        logger.info(
-                            f"Found YouTube video with query {i+1}: {best_match.get('title', 'Unknown title')}"
-                        )
-                        logger.debug(f"URL: {video_url}")
-                        if downloaded_file := download_audio_from_youtube(video_url):
-                            logger.info(
-                                f"✅ Successfully downloaded: {downloaded_file}"
-                            )
-                        else:
-                            logger.warning(
-                                f"❌ Failed to download audio for: {video_url}"
-                            )
-                        return video_url
-                    else:
-                        logger.warning(
-                            f"No valid URL found in search results for query {i+1}"
-                        )
-                        continue
-                else:
-                    logger.warning(f"No search results found for query {i+1}")
-                    continue
-
-        except Exception as e:
-            logger.warning(f"Error with query {i+1} '{search_query}': {e}")
-            continue
-
-    logger.warning(
-        f"No YouTube results found for any of the {len(search_queries)} queries"
-    )
-    return None
-
-
-def is_track_downloaded(youtube_id, output_dir="downloads"):
-    """
-    Check if a track is already downloaded based on YouTube ID.
-
-    Args:
-        youtube_id (str): YouTube video ID
-        output_dir (str): Directory to check for downloads
-
-    Returns:
-        bool: True if track is already downloaded
-    """
-    output_path = Path(output_dir)
-    if not output_path.exists():
-        return False
-
-    # Look for any file with this YouTube ID
-    id_files = list(output_path.glob(f"{youtube_id}__*"))
-    return len(id_files) > 0
-
-
-def extract_youtube_id(video_url):
-    """
-    Extract YouTube video ID from URL for idempotency.
-
-    Args:
-        video_url (str): YouTube video URL
-
-    Returns:
-        str: YouTube video ID
-    """
-    import re
-
-    # Handle different YouTube URL formats
     patterns = [
         r"(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/)([^&\n?#]+)",
         r"youtube\.com/v/([^&\n?#]+)",
     ]
-
     for pattern in patterns:
         match = re.search(pattern, video_url)
         if match:
             return match.group(1)
-
     return "unknown_id"
 
 
-def download_audio_from_youtube(video_url, output_dir="downloads"):
-    """
-    Download audio from YouTube video using yt-dlp.
+def is_track_downloaded(
+    youtube_id: str, output_dir: Path | str = "downloads"
+) -> bool:
+    """Determine whether a YouTube video has already been downloaded."""
 
-    Args:
-        video_url (str): YouTube video URL
-        output_dir (str): Directory to save the downloaded file
+    output_path = Path(output_dir)
+    if not output_path.exists():
+        return False
+    return any(output_path.glob(f"{youtube_id}__*"))
 
-    Returns:
-        str: Path to downloaded file, or None if error
-    """
-    # Create output directory if it doesn't exist
+
+def download_audio_from_youtube(
+    video_url: str, output_dir: Path | str = "downloads"
+) -> Optional[str]:
+    """Download audio as MP3 using ``yt-dlp`` with idempotent filenames."""
+
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Extract YouTube ID for idempotent filename
     youtube_id = extract_youtube_id(video_url)
-
-    # Configure yt-dlp for audio download with YouTube ID-based filename
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": str(output_path / f"{youtube_id}__%(title)s.%(ext)s"),
@@ -263,143 +120,202 @@ def download_audio_from_youtube(video_url, output_dir="downloads"):
                 "preferredquality": "192",
             }
         ],
-        "postprocessor_args": [
-            "-ar",
-            "44100",  # Set sample rate to 44.1kHz
-        ],
+        "postprocessor_args": ["-ar", "44100"],
         "extractaudio": True,
         "audioformat": "mp3",
     }
 
     try:
         logger.info(f"Downloading audio from: {video_url}")
-
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Extract info first to get the filename
-            info = ydl.extract_info(video_url, download=False)
-            if info is None:
-                logger.error("Failed to extract video info.")
-                return None
-            title = info.get("title", "unknown")
-
-            # Download the audio
             ydl.download([video_url])
 
-            # Look for files with this specific YouTube ID
-            id_files = list(output_path.glob(f"{youtube_id}__*"))
-            if id_files:
-                # Get the most recently created file
-                downloaded_file = max(id_files, key=lambda f: f.stat().st_mtime)
-                logger.info(f"Successfully downloaded: {downloaded_file}")
-                return str(downloaded_file)
-
-            logger.warning("Download completed but file not found")
-            return None
-
-    except Exception as e:
-        logger.error(f"Error downloading audio: {e}")
+        id_files = list(output_path.glob(f"{youtube_id}__*"))
+        if id_files:
+            downloaded_file = max(id_files, key=lambda f: f.stat().st_mtime)
+            return str(downloaded_file)
+        logger.warning("Download completed but file not found")
+        return None
+    except Exception as exc:  # pragma: no cover - yt_dlp issues
+        logger.error(f"Error downloading audio: {exc}")
         return None
 
 
-def main():
-    """Main function to handle command line arguments."""
+class YouTubeDownloader:
+    """Handle searching for and downloading tracks from YouTube."""
+
+    def __init__(self, output_dir: str = "downloads") -> None:
+        self.output_dir = Path(output_dir)
+        self._mix_generator: Optional[DJQueryGenerator] = None
+
+    def download_playlist(
+        self,
+        playlist_id: str,
+        query_type: QueryType,
+        max_results_per_track: Optional[int] = None,
+    ) -> DownloadSummary:
+        tracks = get_all_tracks_from_file(playlist_id)
+        if not tracks:
+            raise ValueError("Failed to read tracks from playlist file.")
+
+        per_track_limit = max_results_per_track or (10 if query_type == QueryType.MIX else 1)
+        summary = DownloadSummary(total_tracks=len(tracks))
+
+        for index, track in enumerate(tracks, start=1):
+            logger.info(f"\n--- Track {index}/{len(tracks)}: {track} ---")
+            self._download_for_track(track, query_type, per_track_limit, summary)
+
+        return summary
+
+    def _download_for_track(
+        self,
+        track: Track,
+        query_type: QueryType,
+        per_track_limit: int,
+        summary: DownloadSummary,
+    ) -> None:
+        queries = self._create_search_queries(track, query_type)
+        downloads_for_track = 0
+
+        for query_index, query in enumerate(queries, start=1):
+            if downloads_for_track >= per_track_limit:
+                break
+
+            logger.info(
+                f"Trying query {query_index}/{len(queries)} for '{track.name}': {query}"
+            )
+            results = self._search_youtube(query)
+            if not results:
+                logger.warning(f"No search results found for query {query_index}")
+                continue
+
+            for result in results:
+                if downloads_for_track >= per_track_limit:
+                    break
+
+                video_url = result.get("webpage_url") or result.get("url")
+                if not video_url:
+                    continue
+
+                youtube_id = extract_youtube_id(video_url)
+                summary.requested_downloads += 1
+
+                if is_track_downloaded(youtube_id, self.output_dir):
+                    logger.info(
+                        f"⏭️  Already downloaded, skipping: {result.get('title', 'Unknown title')}"
+                    )
+                    summary.skipped_downloads += 1
+                    continue
+
+                file_path = download_audio_from_youtube(video_url, self.output_dir)
+                if file_path:
+                    logger.info(f"✅ Successfully downloaded: {file_path}")
+                    summary.successful_downloads += 1
+                    downloads_for_track += 1
+                else:
+                    logger.error(f"❌ Failed to download: {video_url}")
+                    summary.failed_downloads += 1
+
+            if downloads_for_track < per_track_limit:
+                logger.debug(
+                    f"Only {downloads_for_track} downloads completed for '{track.name}' so far."
+                )
+
+        if downloads_for_track == 0:
+            logger.error(f"❌ Failed to download any results for: {track}")
+
+    def _create_search_queries(self, track: Track, query_type: QueryType) -> List[str]:
+        if query_type == QueryType.SONG:
+            return [
+                (
+                    f"{track.artist_names} - {track.name} "
+                    "-video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
+                )
+            ]
+
+        if query_type == QueryType.MIX:
+            if self._mix_generator is None:
+                try:
+                    self._mix_generator = DJQueryGenerator()
+                except Exception as exc:
+                    logger.error(
+                        "Unable to initialise DJ mix query generator: %s", exc
+                    )
+                    raise RuntimeError("Missing configuration for DJ mix queries") from exc
+            return self._mix_generator.generate_queries(track).queries
+
+        raise ValueError(f"Unknown query_type: {query_type}")
+
+    @staticmethod
+    def _search_youtube(query: str) -> List[dict]:
+        ydl_opts = {
+            "quiet": True,
+            "no_warnings": True,
+            "extract_flat": True,
+            "default_search": "ytsearch1:",
+        }
+
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(f"ytsearch1:{query}", download=False)
+        except Exception as exc:  # pragma: no cover - yt_dlp issues
+            logger.warning(f"Error executing search query '{query}': {exc}")
+            return []
+
+        entries = info.get("entries") if info else None
+        return entries or []
+
+
+def download_tracks_from_playlist(
+    playlist_id: str,
+    query_type: QueryType = QueryType.SONG,
+    max_results_per_track: Optional[int] = None,
+) -> Optional[dict]:
+    """Public helper used by CLI scripts for backwards compatibility."""
+
+    downloader = YouTubeDownloader()
+    try:
+        summary = downloader.download_playlist(
+            playlist_id, query_type, max_results_per_track=max_results_per_track
+        )
+    except ValueError as exc:
+        logger.error(str(exc))
+        return None
+
+    return summary.as_dict()
+
+
+def print_download_summary(summary: dict | DownloadSummary, label: str = "Tracks") -> None:
+    """Log a download summary to stdout."""
+
+    if isinstance(summary, DownloadSummary):
+        summary_dict = summary.as_dict()
+    else:
+        summary_dict = summary
+
+    print(f"{'=' * 50}")
+    print(f"DOWNLOAD SUMMARY - {label.upper()}")
+    print(f"{'=' * 50}")
+    print(f"Total tracks processed: {summary_dict['total_tracks']}")
+    print(f"Requested downloads: {summary_dict['requested_downloads']}")
+    print(f"✅ Successfully downloaded: {summary_dict['successful_downloads']}")
+    print(f"⏭️  Skipped (already downloaded): {summary_dict['skipped_downloads']}")
+    print(f"❌ Failed: {summary_dict['failed_downloads']}")
+    print(f"{'=' * 50}")
+
+
+def main() -> None:  # pragma: no cover - convenience CLI
+    import sys
+
     if len(sys.argv) != 2:
-        logger.error("Usage: python download_all_songs.py <playlist_id>")
-        logger.error("\nExamples:")
-        logger.error("  python download_all_songs.py 5evvXuuNDgAHbPDmojLZgD")
-        logger.error("  python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M")
-        logger.error("\nNote: The playlist file must exist in output/ directory.")
-        logger.error("Run get_playlist_songs.py first to generate the playlist file.")
+        logger.error("Usage: python youtube_utils.py <playlist_id>")
         sys.exit(1)
 
-
-def download_tracks_from_playlist(playlist_id, query_type=QueryType.SONG):
-    """
-    Download all tracks from a playlist using the specified query type.
-
-    Args:
-        playlist_id (str): Spotify playlist ID
-        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
-
-    logger.info(f"Reading all songs from playlist file: playlist_{playlist_id}.json")
-    Returns:
-        dict: Summary of download results
-    """
-    print(f"Reading all songs from playlist file: playlist_{playlist_id}.json")
-
-    # Get all tracks from the playlist file
-    tracks = get_all_tracks_from_file(playlist_id)
-    if not tracks:
-        logger.error("Failed to read tracks from playlist file.")
-        sys.exit(1)
-
-    logger.info(f"Starting download of {len(tracks)} tracks...")
-
-    successful_downloads = 0
-    skipped_downloads = 0
-    failed_downloads = 0
-
-    for i, track in enumerate(tracks, 1):
-        logger.info(f"\n--- Track {i}/{len(tracks)}: {track} ---")
-
-        # Search YouTube for the track
-        video_url = search_youtube_for_track(track, query_type)
-        if not video_url:
-            logger.error(f"❌ Failed to find track on YouTube: {track}")
-            failed_downloads += 1
-            continue
-
-        # Check if already downloaded
-        youtube_id = extract_youtube_id(video_url)
-        if is_track_downloaded(youtube_id):
-            logger.info(f"⏭️  Already downloaded, skipping: {track}")
-            skipped_downloads += 1
-            continue
-
-        # Download the audio
-        downloaded_file = download_audio_from_youtube(video_url)
-        if downloaded_file:
-            logger.info(f"✅ Successfully downloaded: {downloaded_file}")
-            successful_downloads += 1
-        else:
-            logger.error(f"❌ Failed to download: {track}")
-            failed_downloads += 1
-
-    # Log summary
-    logger.info(f"\n{'='*50}")
-    logger.info(f"DOWNLOAD SUMMARY")
-    logger.info(f"{'='*50}")
-    logger.info(f"Total tracks: {len(tracks)}")
-    logger.info(f"✅ Successfully downloaded: {successful_downloads}")
-    logger.info(f"⏭️  Skipped (already downloaded): {skipped_downloads}")
-    logger.info(f"❌ Failed: {failed_downloads}")
-    logger.info(f"{'='*50}")
-
-    # Return summary
-    return {
-        "total_tracks": len(tracks),
-        "successful_downloads": successful_downloads,
-        "skipped_downloads": skipped_downloads,
-        "failed_downloads": failed_downloads,
-    }
+    playlist_id = sys.argv[1]
+    summary = download_tracks_from_playlist(playlist_id, QueryType.SONG)
+    if summary:
+        print_download_summary(summary)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover - CLI behaviour
     main()
-
-
-def print_download_summary(summary):
-    """
-    Print a formatted download summary.
-
-    Args:
-        summary (dict): Summary dictionary from download_tracks_from_playlist
-    """
-    print(f"\n{'='*50}")
-    print(f"DOWNLOAD SUMMARY")
-    print(f"{'='*50}")
-    print(f"Total tracks: {summary['total_tracks']}")
-    print(f"✅ Successfully downloaded: {summary['successful_downloads']}")
-    print(f"⏭️  Skipped (already downloaded): {summary['skipped_downloads']}")
-    print(f"❌ Failed: {summary['failed_downloads']}")
-    print(f"{'='*50}")
