@@ -140,7 +140,7 @@ def main():
         print_playlist_songs(playlist_response)
 
         # Save to JSON file
-        save_playlist_to_json(playlist_response, "Playlists")
+        save_playlist_to_json(playlist_response, playlist_id)
     else:
         print("Failed to fetch playlist data.")
         sys.exit(1)
