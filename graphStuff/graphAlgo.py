@@ -1,37 +1,12 @@
+# Brute force and beam search algos
 
 from graph import DirectedSongGraph, SongNode
 
-def bf_fixed_start(graph: DirectedSongGraph, start_id: str):
-	"""
-	Finds the longest path (by number of nodes) from start_id without repeating any vertices.
-	Returns the list of song_ids in the longest path.
-	"""
-	def dfs(current_id, visited):
-		visited.add(current_id)
-		max_path = [current_id]
-		for neighbor in graph.get_neighbors(current_id):
-			if neighbor.song_id not in visited:
-				path = dfs(neighbor.song_id, visited.copy())
-				if len(path) + 1 > len(max_path):
-					max_path = [current_id] + path
-		return max_path
-
-	return dfs(start_id, set())
-
-def bf_any_start(graph: DirectedSongGraph):
-	"""
-	Finds the longest path (by number of nodes) from any starting node without repeating any vertices.
-	Returns the list of song_ids in the longest path.
-	"""
-	longest_path = []
-	for song_id in graph.nodes.keys():
-		path = bf_fixed_start(graph, song_id)
-		if len(path) > len(longest_path):
-			longest_path = path
-	return longest_path
+def bf(graph: DirectedSongGraph):
+	return beam_search(graph, k=9999)
 
 #ts is so peak
-def beam_search_longest_path(graph, k):
+def beam_search(graph, k):
 	"""
 	Beam search for a long path in the graph.
 	k: beam width (number of partial paths to keep at each step)
@@ -52,13 +27,39 @@ def beam_search_longest_path(graph, k):
 					if neighbor.song_id not in visited:
 						new_path = path + [neighbor.song_id]
 						new_visited = visited | {neighbor.song_id}
-						new_beam.append((new_path, new_visited))
+						# Heuristic: remaining outdegree (number of unused outgoing edges from neighbor)
+						remaining_outdegree = len([e for e in graph.get_out_edges(neighbor.song_id) if e.target not in new_visited])
+						new_beam.append((new_path, new_visited, remaining_outdegree))
 						extended = True
 				if not extended:
 					# No extension possible, consider for best
 					if len(path) > len(best_path):
 						best_path = path
-			# Keep only top-k longest paths in the beam
-			new_beam.sort(key=lambda x: len(x[0]), reverse=True)
-			beam = new_beam[:k]
-	return best_path
+			# Keep only top-k paths with highest remaining outdegree at the end
+			new_beam.sort(key=lambda x: x[2], reverse=True)
+			# Remove the heuristic value for the next round
+			beam = [(p, v) for (p, v, h) in new_beam[:k]]
+	return songs_to_edges(graph, best_path)
+
+def songs_to_edges(graph: DirectedSongGraph, song_path: List[str]) -> List[TransitionEdge]:
+	edges = []
+	prev_target_start = None
+	for i in range(len(song_path) - 1):
+		source = song_path[i]
+		target = song_path[i + 1]
+		out_edges = [e for e in graph.get_out_edges(source) if e.target == target]
+
+		# Filter out edges that would overlap with the previous transition
+		if prev_target_start is not None:
+			out_edges = [e for e in out_edges if e.sourceEnd >= prev_target_start]
+
+		if not out_edges:
+			raise ValueError(f"No valid non-overlapping edge found from {source} to {target}")
+
+		# Greedily pick the edge that maximizes the previous song's play time (sourceEnd)
+		edge = max(out_edges, key=lambda e: e.sourceEnd)
+		edges.append(edge)
+		prev_target_start = edge.targetStart
+
+	return edges
+
