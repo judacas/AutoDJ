@@ -19,7 +19,7 @@
             "label": "AutoDJ: Run Tests",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "pytest", "tests/", "-v", "--cov=autodj", "--cov-report=html"],
+            "args": ["-m", "pytest", "tests/", "-v", "--cov=MonolithDev", "--cov=graphStuff", "--cov-report=html"],
             "group": "test",
             "presentation": {
                 "echo": true,
