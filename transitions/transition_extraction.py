@@ -7,7 +7,7 @@
 #- Save transition chunks to Blob; store metadata in DB.
 # MVP: local slcie 
 
-# INput: transition bounds time from step 6: detection phase
+# Input: transition bounds time from step 6: detection phase
 #prev_track_path (original Song A file)
 #	•	mix_path (the DJ mix file that contains A→B)
 #	•	next_track_path (original Song B file)
@@ -16,17 +16,18 @@
 # uplaods to azure blob storage?
 # create metadata json
 
-#improt 
+#import
 import subprocess, shlex
 from pathlib import Path
 OUT_DIR = Path("out/transitions")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 #shell runner 
-def run(cmd: str):
-    """Run a shell command and raise an error if it fails."""
-    print("→", cmd)
-    subprocess.run(shlex.split(cmd), check=True)
+def run(*args):
+    # changed to safe cross platform subprocess runner
+    # works on MacOS and windows
+    #print("→", " ".join(args))
+    subprocess.run(list(args), check=True)
 
 def duration(path: str) -> float:
     """Return audio duration in seconds using ffprobe."""
@@ -36,21 +37,43 @@ def duration(path: str) -> float:
         "-of", "default=noprint_wrappers=1:nokey=1",
         path
     ])
+
+    # Error Handling
+    try:
+        return float(out.strip())
+    except ValueError as e:
+        raise RuntimeError(f"Could not decode ffprobe output for {path}: {out!r}") from e
     return float(out.strip())
 
-# extract transition fn (slice and crossfade)
+# Extracts short audio segments from three tracks for transition analysis.
 def extract_segments(prev_path, mix_path, next_path, boundary_s, pre_tail=1.0, mix_before=0.5, mix_after=0.5, post_head=1.0):
     # trasntions "window"
+    # Args:
     # pre tail: how much of prev track tail to grab
     # mix before: how many s before transition to start cut
     # mix after: how far adter transition to include
     # post head: how much of next head to grab
-    """
-    Writes 3 WAVs:
-    - prev_tail.wav (last bit of previous song)
-    - mix_mid.wav   (region around the transition)
-    - next_head.wav (first bit of next song)
-    """
+    
+    # Writes 3 WAVs:
+    #- prev_tail.wav (last bit of previous song)
+    #- mix_mid.wav   (region around the transition)
+    #- next_head.wav (first bit of next song)
+
+    # Input validation
+    for name, val in {
+        "pre_tail": pre_tail,
+        "mix_before": mix_before,
+        "mix_after": mix_after,
+        "post_head": post_head,
+        "boundary_s": boundary_s
+    }.items():
+        if val < 0:
+            raise ValueError(f"{name} cannot be negative (got {val}).")
+    # Make sure boundary_s doesnt go over duration of mix_path
+    mix_len = duration(mix_path)
+    if boundary_s > mix_len:
+        raise ValueError(f"boundary_s ({boundary_s}) exceeds mix track duration ({mix_len:.2f}s).")
+    
     p_tail = OUT_DIR / "prev_tail.wav"
     m_mid  = OUT_DIR / "mix_mid.wav"
     n_head = OUT_DIR / "next_head.wav"
@@ -61,31 +84,50 @@ def extract_segments(prev_path, mix_path, next_path, boundary_s, pre_tail=1.0, m
     # -ss tells ffmpeg where to begin,
     # -t tells it how long to cut
     # -ac 2 -ar 44100 consistent format
-    run(f'ffmpeg -y -ss {start_prev} -t {pre_tail} -i "{prev_path}" -ac 2 -ar 44100 -vn "{p_tail}"')
+    run(
+        "ffmpeg", "-y",
+        "-ss", str(start_prev),
+        "-t", str(pre_tail),
+        "-i", str(prev_path),
+        "-ac", "2", "-ar", "44100", "-vn",
+        str(p_tail)
+    )
 
     # middle part of mix around bounds
     start_mix = max(0.0, boundary_s - mix_before)
     length_mix = mix_before + mix_after
-    run(f'ffmpeg -y -ss {start_mix} -t {length_mix} -i "{mix_path}" -ac 2 -ar 44100 -vn "{m_mid}"')
-
+    run(
+        "ffmpeg", "-y",
+        "-ss", str(start_mix),
+        "-t", str(length_mix),
+        "-i", str(mix_path),
+        "-ac", "2", "-ar", "44100", "-vn",
+        str(m_mid)
+    )
     # next track head
-    run(f'ffmpeg -y -ss 0 -t {post_head} -i "{next_path}" -ac 2 -ar 44100 -vn "{n_head}"')
+    run(
+        "ffmpeg", "-y",
+        "-ss", "0",
+        "-t", str(post_head),
+        "-i", str(next_path),
+        "-ac", "2", "-ar", "44100", "-vn",
+        str(n_head)
+    )
 
     return p_tail, m_mid, n_head
 
 # Helper fn to deal with small or diff size audios
 def safe_crossfade_duration(a_path: Path, b_path: Path, desired_cross: float) -> float:
-    """
-    Returns a safe crossfade duration that won't exceed the length
-    of either audio file.
-    """
+    
+    # Returns a safe crossfade duration that won't exceed the length of either audio file.
+    
     len_a = duration(str(a_path))
     len_b = duration(str(b_path))
 
     # pick the shortest file’s length * 0.8 to stay safe
     max_possible = min(len_a, len_b) * 0.8
     if desired_cross > max_possible:
-        print(f"⚠️ Crossfade {desired_cross:.2f}s too long for clip pair "
+        print(f"Crossfade {desired_cross:.2f}s too long for clip pair "
               f"({len_a:.2f}s, {len_b:.2f}s). Using {max_possible:.2f}s instead.")
         return max_possible
     return desired_cross
@@ -96,11 +138,24 @@ def crossfade(a_path: Path, b_path: Path, out_path: Path, cross=0.3):
     # cross = fade duration (s)
     # used across fade filter
     # Use helper to determine best crossfade
+    
+    # Check for existence of input files
+    if not a_path.exists():
+        print(f"Input file does not exist: {a_path}")
+        return
+    if not b_path.exists():
+        print(f"Input file does not exist: {b_path}")
+        return
+
     cross = safe_crossfade_duration(a_path, b_path, cross)
     run(
-        f'ffmpeg -y -i "{a_path}" -i "{b_path}" '
-        f'-filter_complex "[0:a][1:a]acrossfade=d={cross}:curve1=tri:curve2=tri" '
-        f'-ar 44100 -ac 2 "{out_path}"'
+        "ffmpeg", "-y",
+        "-i", str(a_path),
+        "-i", str(b_path),
+        "-filter_complex",
+        f"[0:a][1:a]acrossfade=d={cross}:curve1=tri:curve2=tri",
+        "-ar", "44100", "-ac", "2",
+        str(out_path)
     )
 
 # helper crossfades prev_plus_mix and next_head
@@ -112,9 +167,14 @@ def stitch_to_final(step1: Path, next_head: Path, mp3_out: Path, cross=0.3):
     # -b:a 192k = use 192 kbps bitrate (good quality, small file size)
     cross = safe_crossfade_duration(step1, next_head, cross)
     run(
-        f'ffmpeg -y -i "{step1}" -i "{next_head}" '
-        f'-filter_complex "[0:a][1:a]acrossfade=d={cross}:curve1=tri:curve2=tri" '
-        f'-c:a libmp3lame -b:a 192k "{mp3_out}"'
+        "ffmpeg", "-y",
+        "-i", str(step1),
+        "-i", str(next_head),
+        "-filter_complex",
+        f"[0:a][1:a]acrossfade=d={cross}:curve1=tri:curve2=tri",
+        "-c:a", "libmp3lame",
+        "-b:a", "192k",
+        str(mp3_out)
     )
 # testing!!
 def main():
@@ -132,15 +192,13 @@ def main():
         post_head=1.0
     )
 
-    # 1️⃣ Crossfade prev → mix
+    # Crossfade 1 prev → mix
     step1 = OUT_DIR / "prev_plus_mix.wav"
     crossfade(p_tail, m_mid, step1, cross=0.3)
 
-    # 2️⃣ Crossfade (prev+mix) → next
+    # Crossfade 2 (prev+mix) → next
     final_mp3 = OUT_DIR / "transition_demo.mp3"
     stitch_to_final(step1, n_head, final_mp3, cross=0.3)
-
-    print("🎧 Final transition saved as:", final_mp3)
 
 if __name__ == "__main__":
     main()
