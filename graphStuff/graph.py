@@ -6,6 +6,7 @@
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import time
+import graphAlgo
 
 @dataclass
 class SongNode:
@@ -51,6 +52,9 @@ class DirectedSongGraph:
 
     def get_song(self, song_id: str) -> Optional[SongNode]:
         return self.nodes.get(song_id)
+
+    def get_decent_path(self)) -> List[str]:
+        return graphAlgo.beam_search_longest_path(self, k=5)
 
 
 # Example usage (to be removed or adapted when connecting to DB):
