@@ -1,0 +1,17 @@
+{
+  "name": "Python 3.13 Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python3.13"
+      },
+      "extensions": [
+        "ms-python.python"
+      ]
+    }
+  },
+  "workspaceFolder": "/workspace"
+}
