@@ -12,7 +12,7 @@ pytest-cov==4.1.0
 pytest-asyncio==0.23.2
 
 # Spotify Integration
-spotipy==2.25
+spotipy==2.25.1
 python-dotenv==1.0.0
 pydantic == 2.11
 
