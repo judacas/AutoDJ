@@ -78,6 +78,14 @@ class Track(BaseModel):
         """Return comma-separated artist names."""
         return ", ".join([artist.name for artist in self.artists])
 
+    def __str__(self) -> str:
+        """Return formatted string representation of the track."""
+        return f"{self.name} - {self.artist_names} ({self.duration_formatted})"
+
+    def to_detailed_string(self) -> str:
+        """Return detailed string representation with album info."""
+        return f"{self.name}\n     Artist(s): {self.artist_names}\n     Album: {self.album.name}\n     Duration: {self.duration_formatted}"
+
 
 class PlaylistTrack(BaseModel):
     """Spotify playlist track item model."""
@@ -94,6 +102,10 @@ class PlaylistTrack(BaseModel):
     video_thumbnail: Optional[dict] = Field(
         None, description="Video thumbnail if available"
     )
+
+    def __str__(self) -> str:
+        """Return string representation of the playlist track."""
+        return str(self.track) if self.track else "No track data available"
 
 
 class Playlist(BaseModel):
@@ -137,3 +149,7 @@ class PlaylistResponse(BaseModel):
     offset: Optional[int] = Field(None, description="Response offset")
     previous: Optional[str] = Field(None, description="Previous page URL")
     total: int = Field(..., description="Total number of tracks")
+
+    def __str__(self) -> str:
+        """Return string representation of the playlist response."""
+        return f"PlaylistResponse(total={self.total}, items={len(self.items)})"
