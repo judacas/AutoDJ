@@ -1,0 +1,40 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.formatOnSave": true,
+		"python.sortImports.path": "isort",
+		"python.defaultInterpreterPath": "./venv/bin/python",
+		"black-formatter.args": [
+			"--line-length=88"
+		],
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter",
+			"editor.formatOnSave": true,
+		},
+		"cSpell.words": [
+			"pylint"
+		],
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-python.vscode-pylance",
+			"ms-python.black-formatter",
+			"ms-python.isort",
+			"ms-python.flake8",
+			"ms-python.pylint",
+			"ms-python.debugpy",
+			"ms-toolsai.jupyter",
+			"ms-toolsai.vscode-jupyter-cell-tags",
+			"ms-toolsai.vscode-jupyter-slideshow",
+			"ms-python.autopep8",
+			"njpwerner.autodocstring",
+			"kevinrose.vsc-python-indent",
+			"ms-python.python-docs"
+		]
+	},
+	}
