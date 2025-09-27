@@ -16,6 +16,12 @@ spotipy==2.25.1
 python-dotenv==1.0.0
 pydantic == 2.11
 
+# YouTube Download
+yt-dlp==2025.9.26
+
+# OpenAI Integration
+openai==1.49.0
+
 # Development Tools
 autopep8==2.0.4
 pylint==3.0.3

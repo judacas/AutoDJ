@@ -86,6 +86,23 @@ class Track(BaseModel):
         """Return detailed string representation with album info."""
         return f"{self.name}\n     Artist(s): {self.artist_names}\n     Album: {self.album.name}\n     Duration: {self.duration_formatted}"
 
+    @property
+    def song_details_formatted(self) -> str:
+        """Return formatted song details for DJ LLM prompts."""
+        explicit_text = "Yes" if self.explicit else "No"
+        popularity_text = (
+            f"{self.popularity}/100" if self.popularity is not None else "N/A"
+        )
+
+        return f"""**Song Details:**
+- Title: {self.name}
+- Artist(s): {self.artist_names}
+- Album: {self.album.name}
+- Release Year: {self.album.release_date[:4] if self.album.release_date and len(self.album.release_date) >= 4 else "N/A"}
+- Duration: {self.duration_formatted}
+- Popularity Score: {popularity_text}
+- Explicit: {explicit_text}"""
+
 
 class PlaylistTrack(BaseModel):
     """Spotify playlist track item model."""

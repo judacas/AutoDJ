@@ -1,181 +1,192 @@
 #!/usr/bin/env python3
-"""
-Simple script to fetch and display songs from a Spotify playlist.
-Usage: python get_playlist_songs.py <playlist_uri>
-"""
+"""Utilities for fetching and persisting Spotify playlist metadata."""
+
+from __future__ import annotations
 
 import sys
-import json
 from pathlib import Path
+from typing import Iterable, Optional
+
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
-from models import PlaylistResponse, PlaylistTrack, Track
+from logging_config import get_module_logger
+from models import PlaylistResponse, PlaylistTrack
+
+# Set up logger for this module
+logger = get_module_logger(__name__)
 
 
-def get_playlist_songs(playlist_uri):
-    """
-    Fetch songs from a Spotify playlist and return them.
+class SpotifyPlaylistService:
+    """High-level helper for working with Spotify playlists."""
 
-    Args:
-        playlist_uri (str): Spotify playlist URI (e.g., spotify:playlist:37i9dQZF1DXcBWIGoYBM5M)
+    def __init__(self, client: Optional[spotipy.Spotify] = None) -> None:
+        self._client: Optional[spotipy.Spotify] = client
 
-    Returns:
-        PlaylistResponse: The playlist response containing all tracks, or None if error
-    """
-    try:
-        # Initialize Spotify client with client credentials
-        client_credentials_manager = SpotifyClientCredentials(
-            client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET
-        )
-        sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-        # Extract playlist ID from URI
+    @staticmethod
+    def extract_playlist_id(playlist_uri: str) -> str:
+        """Normalize any Spotify playlist reference into its bare playlist ID."""
         if playlist_uri.startswith("spotify:playlist:"):
-            playlist_id = playlist_uri.split(":")[-1]
-        elif "spotify.com/playlist/" in playlist_uri:
-            playlist_id = playlist_uri.split("/")[-1].split("?")[0]
-        else:
-            playlist_id = playlist_uri
+            return playlist_uri.split(":")[-1]
+        if "spotify.com/playlist/" in playlist_uri:
+            return playlist_uri.split("/")[-1].split("?")[0]
+        return playlist_uri
 
-        # Get playlist tracks with pagination to collect all pages
-        all_tracks = []
-        offset = 0
-        limit = 100  # Spotify's maximum per request
-        last_response = None
+    def fetch_playlist(self, playlist_uri: str) -> Optional[PlaylistResponse]:
+        """Fetch the complete playlist response from Spotify."""
+        playlist_id = self.extract_playlist_id(playlist_uri)
+        try:
+            aggregated_response = self._collect_paginated_tracks(playlist_id)
+        except spotipy.exceptions.SpotifyException as exc:  # pragma: no cover - network
+            logger.error(f"Spotify API error: {exc}")
+            return None
+        except Exception as exc:  # pragma: no cover - defensive logging
+            logger.error(f"Unexpected error fetching playlist: {exc}")
+            return None
 
-        while True:
-            raw_results = sp.playlist_tracks(playlist_id, limit=limit, offset=offset)
-
-            # Store the last valid response for metadata
-            if raw_results:
-                last_response = raw_results
-
-            # Add tracks from this page
-            if raw_results and raw_results.get("items"):
-                all_tracks.extend(raw_results["items"])
-
-            # Check if there are more pages
-            if not raw_results or not raw_results.get("next"):
-                break
-
-            # Update offset for next page
-            offset += limit
-
-        # Create aggregated response with all tracks
-        aggregated_response = {
-            "href": last_response.get("href", "") if last_response else "",
-            "items": all_tracks,
-            "limit": last_response.get("limit", limit) if last_response else limit,
-            "next": None,  # No more pages
-            "offset": 0,  # Reset offset since we have all items
-            "previous": None,
-            "total": len(all_tracks),
-        }
-
-        # Parse response using Pydantic model
         try:
             playlist_response = PlaylistResponse.model_validate(aggregated_response)
-        except Exception as e:
-            print(f"Error parsing playlist response: {e}")
+        except Exception as exc:
+            logger.error(f"Error parsing playlist response: {exc}")
             return None
 
         if not playlist_response.items:
-            print("No songs found in this playlist.")
+            logger.warning("No songs found in this playlist.")
             return None
 
         return playlist_response
 
-    except spotipy.exceptions.SpotifyException as e:
-        print(f"Spotify API error: {e}")
-        return None
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+    def save_playlist_to_json(
+        self,
+        playlist_response: PlaylistResponse,
+        playlist_id: str,
+        output_dir: str = "output",
+    ) -> Path:
+        """Persist the playlist to JSON using the service's serialization strategy."""
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        filepath = output_path / f"playlist_{playlist_id}.json"
+        filepath.write_text(
+            playlist_response.model_dump_json(indent=2), encoding="utf-8"
+        )
+
+        logger.info(f"Playlist data saved to: {filepath}")
+        return filepath
+
+    def log_playlist(self, playlist_response: PlaylistResponse) -> None:
+        """Pretty-print playlist contents using the configured logger."""
+        logger.info("-" * 50)
+        for index, playlist_track in enumerate(
+            self._iter_tracks(playlist_response), start=1
+        ):
+            if playlist_track.track is None:
+                logger.info(f"{index:3d}. [No track data]")
+                continue
+            logger.info(f"{index:3d}. {playlist_track.track.to_detailed_string()}")
+        logger.info(f"Total tracks in playlist: {playlist_response.total}")
+
+    def _create_client(self) -> spotipy.Spotify:
+        credentials = SpotifyClientCredentials(
+            client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET
+        )
+        return spotipy.Spotify(client_credentials_manager=credentials)
+
+    def _collect_paginated_tracks(self, playlist_id: str) -> dict:
+        all_tracks: list[dict] = []
+        offset = 0
+        limit = 100  # Spotify's maximum per request
+        last_response: Optional[dict] = None
+
+        while True:
+            raw_results = self.client.playlist_tracks(
+                playlist_id, limit=limit, offset=offset
+            )
+            if raw_results:
+                last_response = raw_results
+                items = raw_results.get("items") or []
+                all_tracks.extend(items)
+
+            if not raw_results or not raw_results.get("next"):
+                break
+
+            offset += limit
+
+        return {
+            "href": last_response.get("href", "") if last_response else "",
+            "items": all_tracks,
+            "limit": last_response.get("limit", limit) if last_response else limit,
+            "next": None,
+            "offset": 0,
+            "previous": None,
+            "total": len(all_tracks),
+        }
+
+    @staticmethod
+    def _iter_tracks(playlist_response: PlaylistResponse) -> Iterable[PlaylistTrack]:
+        return (item for item in playlist_response.items if item.track is not None)
+
+    @property
+    def client(self) -> spotipy.Spotify:
+        if self._client is None:
+            self._client = self._create_client()
+        return self._client
 
 
-def save_playlist_to_json(playlist_response, playlist_id, output_dir="output"):
-    """
-    Save playlist data to JSON file using Pydantic's natural serialization.
-
-    Args:
-        playlist_response (PlaylistResponse): The playlist response to save
-        playlist_id (str): The playlist ID for filename
-        output_dir (str): Directory to save the JSON file
-    """
-    # Create output directory if it doesn't exist
-    output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
-
-    # Create filename with playlist ID
-    filename = f"playlist_{playlist_id}.json"
-    filepath = output_path / filename
-
-    # Use Pydantic's model_dump_json for natural serialization
-    json_data = playlist_response.model_dump_json(indent=2)
-
-    # Write to file
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(json_data)
-
-    print(f"Playlist data saved to: {filepath}")
-    return filepath
+def get_playlist_songs(
+    playlist_uri: str, service: Optional[SpotifyPlaylistService] = None
+) -> Optional[PlaylistResponse]:
+    """Compatibility wrapper that fetches songs using :class:`SpotifyPlaylistService`."""
+    service = service or SpotifyPlaylistService()
+    return service.fetch_playlist(playlist_uri)
 
 
-def print_playlist_songs(playlist_response):
-    """
-    Print playlist songs in a formatted way using Pydantic's toString methods.
-
-    Args:
-        playlist_response (PlaylistResponse): The playlist response to print
-    """
-    print("-" * 50)
-
-    # Print each song using Pydantic models' toString methods
-    for i, playlist_track in enumerate(playlist_response.items, 1):
-        if playlist_track.track:
-            # Use the detailed string method for better formatting
-            track_details = playlist_track.track.to_detailed_string()
-            print(f"{i:3d}. {track_details}")
-            print()
-
-    # Print summary
-    print(f"Total tracks in playlist: {playlist_response.total}")
+def save_playlist_to_json(
+    playlist_response: PlaylistResponse,
+    playlist_id: str,
+    output_dir: str = "output",
+    service: Optional[SpotifyPlaylistService] = None,
+) -> Path:
+    """Proxy to :meth:`SpotifyPlaylistService.save_playlist_to_json` for backwards compatibility."""
+    service = service or SpotifyPlaylistService()
+    return service.save_playlist_to_json(playlist_response, playlist_id, output_dir)
 
 
-def main():
-    """Main function to handle command line arguments."""
+def log_playlist_songs(
+    playlist_response: PlaylistResponse,
+    service: Optional[SpotifyPlaylistService] = None,
+) -> None:
+    """Compatibility wrapper around :meth:`SpotifyPlaylistService.log_playlist`."""
+    service = service or SpotifyPlaylistService()
+    service.log_playlist(playlist_response)
+
+
+def main() -> None:
+    """CLI entry point used when running the module directly."""
     if len(sys.argv) != 2:
-        print("Usage: python get_playlist_songs.py <playlist_uri>")
-        print("\nExamples:")
-        print("  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
-        print(
+        logger.error("Usage: python get_playlist_songs.py <playlist_uri>")
+        logger.error("\nExamples:")
+        logger.error(
+            "  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M"
+        )
+        logger.error(
             "  python get_playlist_songs.py https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
         )
         sys.exit(1)
 
     playlist_uri = sys.argv[1]
+    service = SpotifyPlaylistService()
+    playlist_id = service.extract_playlist_id(playlist_uri)
+    logger.info(f"Fetching songs from playlist: {playlist_id}")
 
-    # Extract playlist ID for saving
-    if playlist_uri.startswith("spotify:playlist:"):
-        playlist_id = playlist_uri.split(":")[-1]
-    elif "spotify.com/playlist/" in playlist_uri:
-        playlist_id = playlist_uri.split("/")[-1].split("?")[0]
-    else:
-        playlist_id = playlist_uri
-
-    print(f"Fetching songs from playlist: {playlist_id}")
-
-    # Get playlist songs
-    if playlist_response := get_playlist_songs(playlist_uri):
-        # Print the songs
-        print_playlist_songs(playlist_response)
-
-        # Save to JSON file
-        save_playlist_to_json(playlist_response, playlist_id)
-    else:
-        print("Failed to fetch playlist data.")
+    playlist_response = service.fetch_playlist(playlist_uri)
+    if not playlist_response:
+        logger.error("Failed to fetch playlist data.")
         sys.exit(1)
+
+    service.log_playlist(playlist_response)
+    service.save_playlist_to_json(playlist_response, playlist_id)
 
 
 if __name__ == "__main__":
