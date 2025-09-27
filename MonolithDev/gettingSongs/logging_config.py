@@ -50,13 +50,22 @@ def setup_logger(
     
     # File handler
     if log_file:
-        log_path = Path(log_file)
-        log_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        file_handler = logging.FileHandler(log_file, encoding='utf-8')
-        file_handler.setLevel(level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        try:
+            log_path = Path(log_file)
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            file_handler = logging.FileHandler(log_file, encoding='utf-8')
+            file_handler.setLevel(level)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        except Exception as e:
+            # Log the error to the console
+            error_msg = f"Failed to set up file logging at '{log_file}': {e}"
+            temp_console_handler = logging.StreamHandler(sys.stderr)
+            temp_console_handler.setLevel(logging.ERROR)
+            temp_console_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+            logger.addHandler(temp_console_handler)
+            logger.error(error_msg)
+            logger.removeHandler(temp_console_handler)
     
     return logger
 
