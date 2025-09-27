@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
-"""
-Script to download tracks from a saved Spotify playlist JSON file using YouTube via yt-dlp.
-Usage: python download_tracks.py <playlist_id> <query_type>
-
-The playlist JSON file must exist in the output/ directory with naming scheme: playlist_{playlist_id}.json
-Downloads are idempotent - already downloaded tracks will be skipped.
-
-Query types:
-- "song": Downloads original songs (prefers official audio, avoids remixes, covers, etc.)
-- "mix": Downloads mixes that may include the songs from the playlist
-
-Examples:
-  python download_tracks.py 5evvXuuNDgAHbPDmojLZgD song
-  python download_tracks.py 37i9dQZF1DXcBWIGoYBM5M mix
-"""
+"""Download tracks or mixes for a playlist stored in the database."""
 
 import sys
 from youtube_utils import QueryType, YouTubeDownloader, print_download_summary
@@ -29,8 +15,7 @@ def main():
         print("\nExamples:")
         print("  python download_tracks.py 5evvXuuNDgAHbPDmojLZgD song")
         print("  python download_tracks.py 37i9dQZF1DXcBWIGoYBM5M mix")
-        print("\nNote: The playlist file must exist in output/ directory.")
-        print("Run get_playlist_songs.py first to generate the playlist file.")
+        print("\nNote: Fetch the playlist first using playlist_full_converter.py.")
         sys.exit(1)
 
     playlist_id = sys.argv[1]

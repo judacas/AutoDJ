@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Dict, Optional
 
 from logging_config import get_module_logger
@@ -22,7 +21,7 @@ class PipelineResult:
 
     playlist_id: str
     playlist: PlaylistResponse
-    playlist_json: Path
+    persisted_tracks: int
     download_summaries: Dict[QueryType, dict]
 
 
@@ -43,15 +42,19 @@ class PlaylistPipeline:
         mixes_per_track: int = 10,
         download_songs: bool = True,
         download_mixes: bool = True,
+        preloaded_playlist: Optional[PlaylistResponse] = None,
     ) -> PipelineResult:
         """Execute the playlist workflow from Spotify fetch to audio downloads."""
 
-        playlist = self.spotify_service.fetch_playlist(playlist_uri)
-        if not playlist:
-            raise ValueError("Unable to fetch playlist from Spotify")
+        if preloaded_playlist is not None:
+            playlist = preloaded_playlist
+        else:
+            playlist = self.spotify_service.fetch_playlist(playlist_uri)
+            if not playlist:
+                raise ValueError("Unable to fetch playlist from Spotify")
 
         playlist_id = self.spotify_service.extract_playlist_id(playlist_uri)
-        playlist_path = self.spotify_service.save_playlist_to_json(
+        stored_count = self.spotify_service.save_playlist_to_database(
             playlist, playlist_id
         )
 
@@ -71,7 +74,7 @@ class PlaylistPipeline:
         return PipelineResult(
             playlist_id=playlist_id,
             playlist=playlist,
-            playlist_json=playlist_path,
+            persisted_tracks=stored_count,
             download_summaries=summaries,
         )
 

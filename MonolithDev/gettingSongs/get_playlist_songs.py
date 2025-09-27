@@ -4,12 +4,12 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 from typing import Iterable, Optional
 
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
+from database import persist_playlist
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 from logging_config import get_module_logger
 from models import PlaylistResponse, PlaylistTrack
@@ -57,23 +57,16 @@ class SpotifyPlaylistService:
 
         return playlist_response
 
-    def save_playlist_to_json(
-        self,
-        playlist_response: PlaylistResponse,
-        playlist_id: str,
-        output_dir: str = "output",
-    ) -> Path:
-        """Persist the playlist to JSON using the service's serialization strategy."""
-        output_path = Path(output_dir)
-        output_path.mkdir(parents=True, exist_ok=True)
+    def save_playlist_to_database(
+        self, playlist_response: PlaylistResponse, playlist_id: str
+    ) -> int:
+        """Persist the playlist metadata to the configured database."""
 
-        filepath = output_path / f"playlist_{playlist_id}.json"
-        filepath.write_text(
-            playlist_response.model_dump_json(indent=2), encoding="utf-8"
+        stored_tracks = persist_playlist(playlist_id, playlist_response)
+        logger.info(
+            "Playlist %s stored in database with %d tracks", playlist_id, stored_tracks
         )
-
-        logger.info(f"Playlist data saved to: {filepath}")
-        return filepath
+        return stored_tracks
 
     def log_playlist(self, playlist_response: PlaylistResponse) -> None:
         """Pretty-print playlist contents using the configured logger."""
@@ -142,15 +135,15 @@ def get_playlist_songs(
     return service.fetch_playlist(playlist_uri)
 
 
-def save_playlist_to_json(
+def save_playlist_to_database(
     playlist_response: PlaylistResponse,
     playlist_id: str,
-    output_dir: str = "output",
     service: Optional[SpotifyPlaylistService] = None,
-) -> Path:
-    """Proxy to :meth:`SpotifyPlaylistService.save_playlist_to_json` for backwards compatibility."""
+) -> int:
+    """Persist playlist data using :class:`SpotifyPlaylistService`."""
+
     service = service or SpotifyPlaylistService()
-    return service.save_playlist_to_json(playlist_response, playlist_id, output_dir)
+    return service.save_playlist_to_database(playlist_response, playlist_id)
 
 
 def log_playlist_songs(
@@ -186,7 +179,7 @@ def main() -> None:
         sys.exit(1)
 
     service.log_playlist(playlist_response)
-    service.save_playlist_to_json(playlist_response, playlist_id)
+    service.save_playlist_to_database(playlist_response, playlist_id)
 
 
 if __name__ == "__main__":
