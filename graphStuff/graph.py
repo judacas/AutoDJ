@@ -1,11 +1,11 @@
 # 0 integration with the actual database whenever thats made
 # AI will actually coordinate with the DB
 
-# CURRENT STATE: Good enough for a while as of 11pm 9/26
+# CURRENT STATE: Tested, works so far
 
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import time
 
 @dataclass
 class SongNode:
@@ -16,7 +16,9 @@ class SongNode:
 class TransitionEdge:
     source: str  # song_id
     target: str  # song_id
-    timestamp: datetime
+    duration: time
+    sourceEnd : time
+    targetStart : time
     mix_id: str
     confidence: float
     extra: dict = field(default_factory=dict)
@@ -30,8 +32,8 @@ class DirectedSongGraph:
         if song_id not in self.nodes:
             self.nodes[song_id] = SongNode(song_id, metadata or {})
 
-    def add_transition(self, source: str, target: str, timestamp: datetime, mix_id: str, confidence: float, extra: Optional[dict] = None):
-        edge = TransitionEdge(source, target, timestamp, mix_id, confidence, extra or {})
+    def add_transition(self, source: str, target: str, duration: time, sourceEnd: time, targetStart: time, mix_id: str, confidence: float, extra: Optional[dict] = None):
+        edge = TransitionEdge(source, target, duration, sourceEnd, targetStart, mix_id, confidence, extra or {})
         if source not in self.edges:
             self.edges[source] = []
         self.edges[source].append(edge)
@@ -55,6 +57,6 @@ class DirectedSongGraph:
 # graph = DirectedSongGraph()
 # graph.add_song('song1', {'title': 'Song One'})
 # graph.add_song('song2', {'title': 'Song Two'})
-# graph.add_transition('song1', 'song2', datetime.now(), 'mix123', 0.95)
+# graph.add_transition('song1', 'song2', 0, 'mix123', 0.95)
 # neighbors = graph.get_neighbors('song1')
 # out_edges = graph.get_out_edges('song1')
