@@ -16,6 +16,9 @@ spotipy==2.25.1
 python-dotenv==1.0.0
 pydantic == 2.11
 
+# AI/LLM Integration
+openai==1.54.3
+
 # Development Tools
 autopep8==2.0.4
 pylint==3.0.3

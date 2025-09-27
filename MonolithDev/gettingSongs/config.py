@@ -13,9 +13,16 @@ SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
 SPOTIFY_REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI', 'http://localhost:8888/callback')
 SPOTIFY_CACHE_PATH = os.getenv('SPOTIFY_CACHE_PATH', '.spotify_cache')
 
+# OpenAI API Configuration
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
 # Validate required credentials
 if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
     raise ValueError(
         "Please set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in your .env file. "
         "Get these from https://developer.spotify.com/dashboard"
     )
+
+if not OPENAI_API_KEY:
+    print("Warning: OPENAI_API_KEY not set. DJ query generation will not work.")
+    print("Set OPENAI_API_KEY in your .env file to enable AI-powered query generation.")
