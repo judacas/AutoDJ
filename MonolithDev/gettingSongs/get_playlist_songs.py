@@ -11,6 +11,10 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 from models import PlaylistResponse, PlaylistTrack, Track
+from logging_config import get_module_logger
+
+# Set up logger for this module
+logger = get_module_logger(__name__)
 
 
 def get_playlist_songs(playlist_uri):
@@ -77,20 +81,20 @@ def get_playlist_songs(playlist_uri):
         try:
             playlist_response = PlaylistResponse.model_validate(aggregated_response)
         except Exception as e:
-            print(f"Error parsing playlist response: {e}")
+            logger.error(f"Error parsing playlist response: {e}")
             return None
 
         if not playlist_response.items:
-            print("No songs found in this playlist.")
+            logger.warning("No songs found in this playlist.")
             return None
 
         return playlist_response
 
     except spotipy.exceptions.SpotifyException as e:
-        print(f"Spotify API error: {e}")
+        logger.error(f"Spotify API error: {e}")
         return None
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
         return None
 
 
@@ -118,38 +122,37 @@ def save_playlist_to_json(playlist_response, playlist_id, output_dir="output"):
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(json_data)
 
-    print(f"Playlist data saved to: {filepath}")
+    logger.info(f"Playlist data saved to: {filepath}")
     return filepath
 
 
-def print_playlist_songs(playlist_response):
+def log_playlist_songs(playlist_response):
     """
-    Print playlist songs in a formatted way using Pydantic's toString methods.
+    Log playlist songs in a formatted way using Pydantic's toString methods.
 
     Args:
-        playlist_response (PlaylistResponse): The playlist response to print
+        playlist_response (PlaylistResponse): The playlist response to log
     """
-    print("-" * 50)
+    logger.info("-" * 50)
 
-    # Print each song using Pydantic models' toString methods
+    # Log each song using Pydantic models' toString methods
     for i, playlist_track in enumerate(playlist_response.items, 1):
         if playlist_track.track:
             # Use the detailed string method for better formatting
             track_details = playlist_track.track.to_detailed_string()
-            print(f"{i:3d}. {track_details}")
-            print()
+            logger.info(f"{i:3d}. {track_details}")
 
-    # Print summary
-    print(f"Total tracks in playlist: {playlist_response.total}")
+    # Log summary
+    logger.info(f"Total tracks in playlist: {playlist_response.total}")
 
 
 def main():
     """Main function to handle command line arguments."""
     if len(sys.argv) != 2:
-        print("Usage: python get_playlist_songs.py <playlist_uri>")
-        print("\nExamples:")
-        print("  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
-        print(
+        logger.error("Usage: python get_playlist_songs.py <playlist_uri>")
+        logger.info("\nExamples:")
+        logger.info("  python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
+        logger.info(
             "  python get_playlist_songs.py https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
         )
         sys.exit(1)
@@ -164,17 +167,17 @@ def main():
     else:
         playlist_id = playlist_uri
 
-    print(f"Fetching songs from playlist: {playlist_id}")
+    logger.info(f"Fetching songs from playlist: {playlist_id}")
 
     # Get playlist songs
     if playlist_response := get_playlist_songs(playlist_uri):
-        # Print the songs
-        print_playlist_songs(playlist_response)
+        # Log the songs
+        log_playlist_songs(playlist_response)
 
         # Save to JSON file
         save_playlist_to_json(playlist_response, playlist_id)
     else:
-        print("Failed to fetch playlist data.")
+        logger.error("Failed to fetch playlist data.")
         sys.exit(1)
 
 
