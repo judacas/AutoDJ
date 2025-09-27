@@ -140,7 +140,6 @@ def search_youtube_for_track(track, query_type=QueryType.SONG):
         "extract_flat": True,
         "default_search": "ytsearch1:",  # Search YouTube and get top result
     }
-
     # Try each query until we find a result
     for i, search_query in enumerate(search_queries):
         try:
