@@ -242,11 +242,11 @@ def main():
     """Main function to handle command line arguments."""
     if len(sys.argv) != 2:
         logger.error("Usage: python download_all_songs.py <playlist_id>")
-        logger.info("\nExamples:")
-        logger.info("  python download_all_songs.py 5evvXuuNDgAHbPDmojLZgD")
-        logger.info("  python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M")
-        logger.info("\nNote: The playlist file must exist in output/ directory.")
-        logger.info("Run get_playlist_songs.py first to generate the playlist file.")
+        logger.error("\nExamples:")
+        logger.error("  python download_all_songs.py 5evvXuuNDgAHbPDmojLZgD")
+        logger.error("  python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M")
+        logger.error("\nNote: The playlist file must exist in output/ directory.")
+        logger.error("Run get_playlist_songs.py first to generate the playlist file.")
         sys.exit(1)
 
     playlist_id = sys.argv[1]
