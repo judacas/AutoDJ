@@ -1,0 +1,10 @@
+{
+    "include": [
+        "MonolithDev",
+        "graphStuff"
+    ],
+    "extraPaths": [
+        "MonolithDev/gettingSongs"
+    ],
+    "pythonVersion": "3.13"
+}

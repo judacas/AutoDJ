@@ -1,0 +1,102 @@
+{
+  "href": "https://api.spotify.com/v1/playlists/6QlpcKAnqzRPhFPXVtfr0I/tracks?offset=0&limit=100&additional_types=track",
+  "items": [
+    {
+      "track": {
+        "name": "Tití Me Preguntó",
+        "id": "1IHWl5LamUGEuP4ozKQSXZ",
+        "artists": [
+          {
+            "name": "Bad Bunny",
+            "id": "4q3ewBCX7sLwd24euuV69X",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/4q3ewBCX7sLwd24euuV69X"
+            },
+            "href": "https://api.spotify.com/v1/artists/4q3ewBCX7sLwd24euuV69X",
+            "type": "artist",
+            "uri": "spotify:artist:4q3ewBCX7sLwd24euuV69X"
+          }
+        ],
+        "album": {
+          "name": "Un Verano Sin Ti",
+          "id": "3RQQmkQEvNCY4prGKE6oc5",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Bad Bunny",
+              "id": "4q3ewBCX7sLwd24euuV69X",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/4q3ewBCX7sLwd24euuV69X"
+              },
+              "href": "https://api.spotify.com/v1/artists/4q3ewBCX7sLwd24euuV69X",
+              "type": "artist",
+              "uri": "spotify:artist:4q3ewBCX7sLwd24euuV69X"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/3RQQmkQEvNCY4prGKE6oc5"
+          },
+          "href": "https://api.spotify.com/v1/albums/3RQQmkQEvNCY4prGKE6oc5",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0249d694203245f241a1bcaa72",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485149d694203245f241a1bcaa72",
+              "width": 64
+            }
+          ],
+          "release_date": "2022-05-06",
+          "release_date_precision": "day",
+          "total_tracks": 23,
+          "type": "album",
+          "uri": "spotify:album:3RQQmkQEvNCY4prGKE6oc5"
+        },
+        "duration_ms": 243716,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "QM6MZ2214878"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1IHWl5LamUGEuP4ozKQSXZ"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1IHWl5LamUGEuP4ozKQSXZ",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 82,
+        "preview_url": null,
+        "track_number": 4,
+        "type": "track",
+        "uri": "spotify:track:1IHWl5LamUGEuP4ozKQSXZ"
+      },
+      "added_at": "2025-09-27T09:32:10Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    }
+  ],
+  "limit": 100,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 1
+}

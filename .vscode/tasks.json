@@ -1,0 +1,108 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "AutoDJ: Setup Environment",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "pip", "install", "-r", "requirements.txt"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Run Tests",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "pytest", ".", "-v", "--cov=MonolithDev", "--cov=graphStuff", "--cov-report=html"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Lint Code",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "flake8", "MonolithDev/", "graphStuff/"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Type Check",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "mypy", "MonolithDev/"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Format Code",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "black", "MonolithDev/", "graphStuff/"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Sort Imports",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "isort", "MonolithDev/", "graphStuff/"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Run All Checks & Format",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "AutoDJ: Format Code",
+                "AutoDJ: Sort Imports",
+                "AutoDJ: Lint Code",
+                "AutoDJ: Type Check",
+                "AutoDJ: Run Tests"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

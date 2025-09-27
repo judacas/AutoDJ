@@ -11,7 +11,6 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
 lib/
@@ -60,6 +59,9 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# AutoDJ logs
+logs/
 
 # Flask stuff:
 instance/

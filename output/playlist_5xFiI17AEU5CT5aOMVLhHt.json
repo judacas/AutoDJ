@@ -1,0 +1,408 @@
+{
+  "href": "https://api.spotify.com/v1/playlists/5xFiI17AEU5CT5aOMVLhHt/tracks?offset=0&limit=100&additional_types=track",
+  "items": [
+    {
+      "track": {
+        "name": "Mariposas",
+        "id": "1vNR2F2fCS6KRidsZ0rOqS",
+        "artists": [
+          {
+            "name": "Mr. Don",
+            "id": "12YP3RGVLp3c36Zi6lFRtR",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/12YP3RGVLp3c36Zi6lFRtR"
+            },
+            "href": "https://api.spotify.com/v1/artists/12YP3RGVLp3c36Zi6lFRtR",
+            "type": "artist",
+            "uri": "spotify:artist:12YP3RGVLp3c36Zi6lFRtR"
+          },
+          {
+            "name": "DerekVinci",
+            "id": "7du7SizqDeaP96ds19p1yu",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/7du7SizqDeaP96ds19p1yu"
+            },
+            "href": "https://api.spotify.com/v1/artists/7du7SizqDeaP96ds19p1yu",
+            "type": "artist",
+            "uri": "spotify:artist:7du7SizqDeaP96ds19p1yu"
+          }
+        ],
+        "album": {
+          "name": "Ascension",
+          "id": "6m8JBj7rzNuVc2VtmjiYKR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Mr. Don",
+              "id": "12YP3RGVLp3c36Zi6lFRtR",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/12YP3RGVLp3c36Zi6lFRtR"
+              },
+              "href": "https://api.spotify.com/v1/artists/12YP3RGVLp3c36Zi6lFRtR",
+              "type": "artist",
+              "uri": "spotify:artist:12YP3RGVLp3c36Zi6lFRtR"
+            },
+            {
+              "name": "DerekVinci",
+              "id": "7du7SizqDeaP96ds19p1yu",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/7du7SizqDeaP96ds19p1yu"
+              },
+              "href": "https://api.spotify.com/v1/artists/7du7SizqDeaP96ds19p1yu",
+              "type": "artist",
+              "uri": "spotify:artist:7du7SizqDeaP96ds19p1yu"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/6m8JBj7rzNuVc2VtmjiYKR"
+          },
+          "href": "https://api.spotify.com/v1/albums/6m8JBj7rzNuVc2VtmjiYKR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27387e4d7b9e91017082e752093",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0287e4d7b9e91017082e752093",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485187e4d7b9e91017082e752093",
+              "width": 64
+            }
+          ],
+          "release_date": "2024-04-26",
+          "release_date_precision": "day",
+          "total_tracks": 8,
+          "type": "album",
+          "uri": "spotify:album:6m8JBj7rzNuVc2VtmjiYKR"
+        },
+        "duration_ms": 204330,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "QZ5AB2322272"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1vNR2F2fCS6KRidsZ0rOqS"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1vNR2F2fCS6KRidsZ0rOqS",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 37,
+        "preview_url": null,
+        "track_number": 3,
+        "type": "track",
+        "uri": "spotify:track:1vNR2F2fCS6KRidsZ0rOqS"
+      },
+      "added_at": "2025-09-17T21:56:11Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Si Ya No Volverás",
+        "id": "7kUSep3CvyAemLAZiYBKkL",
+        "artists": [
+          {
+            "name": "Prince Royce",
+            "id": "3MHaV05u0io8fQbZ2XPtlC",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/3MHaV05u0io8fQbZ2XPtlC"
+            },
+            "href": "https://api.spotify.com/v1/artists/3MHaV05u0io8fQbZ2XPtlC",
+            "type": "artist",
+            "uri": "spotify:artist:3MHaV05u0io8fQbZ2XPtlC"
+          }
+        ],
+        "album": {
+          "name": "LLAMADA PERDIDA",
+          "id": "14ZGI8bUlOfVKT8SBLFjjT",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Prince Royce",
+              "id": "3MHaV05u0io8fQbZ2XPtlC",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/3MHaV05u0io8fQbZ2XPtlC"
+              },
+              "href": "https://api.spotify.com/v1/artists/3MHaV05u0io8fQbZ2XPtlC",
+              "type": "artist",
+              "uri": "spotify:artist:3MHaV05u0io8fQbZ2XPtlC"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/14ZGI8bUlOfVKT8SBLFjjT"
+          },
+          "href": "https://api.spotify.com/v1/albums/14ZGI8bUlOfVKT8SBLFjjT",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27383de8be41c5d524c80fd4853",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0283de8be41c5d524c80fd4853",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485183de8be41c5d524c80fd4853",
+              "width": 64
+            }
+          ],
+          "release_date": "2024-02-16",
+          "release_date_precision": "day",
+          "total_tracks": 23,
+          "type": "album",
+          "uri": "spotify:album:14ZGI8bUlOfVKT8SBLFjjT"
+        },
+        "duration_ms": 283366,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "QZUFT2210049"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/7kUSep3CvyAemLAZiYBKkL"
+        },
+        "href": "https://api.spotify.com/v1/tracks/7kUSep3CvyAemLAZiYBKkL",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 43,
+        "preview_url": null,
+        "track_number": 12,
+        "type": "track",
+        "uri": "spotify:track:7kUSep3CvyAemLAZiYBKkL"
+      },
+      "added_at": "2025-09-17T22:00:38Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Eres Mía",
+        "id": "6I86RF3odBlcuZA9Vfjzeq",
+        "artists": [
+          {
+            "name": "Romeo Santos",
+            "id": "5lwmRuXgjX8xIwlnauTZIP",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/5lwmRuXgjX8xIwlnauTZIP"
+            },
+            "href": "https://api.spotify.com/v1/artists/5lwmRuXgjX8xIwlnauTZIP",
+            "type": "artist",
+            "uri": "spotify:artist:5lwmRuXgjX8xIwlnauTZIP"
+          }
+        ],
+        "album": {
+          "name": "Fórmula, Vol. 2 (Deluxe Edition)",
+          "id": "17HsiXfqKUPoTP6Y5ebs1L",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Romeo Santos",
+              "id": "5lwmRuXgjX8xIwlnauTZIP",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/5lwmRuXgjX8xIwlnauTZIP"
+              },
+              "href": "https://api.spotify.com/v1/artists/5lwmRuXgjX8xIwlnauTZIP",
+              "type": "artist",
+              "uri": "spotify:artist:5lwmRuXgjX8xIwlnauTZIP"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/17HsiXfqKUPoTP6Y5ebs1L"
+          },
+          "href": "https://api.spotify.com/v1/albums/17HsiXfqKUPoTP6Y5ebs1L",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b273e9da42890bbd629df1e8f640",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e02e9da42890bbd629df1e8f640",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d00004851e9da42890bbd629df1e8f640",
+              "width": 64
+            }
+          ],
+          "release_date": "2014-02-25",
+          "release_date_precision": "day",
+          "total_tracks": 19,
+          "type": "album",
+          "uri": "spotify:album:17HsiXfqKUPoTP6Y5ebs1L"
+        },
+        "duration_ms": 250640,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSD11300464"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6I86RF3odBlcuZA9Vfjzeq"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6I86RF3odBlcuZA9Vfjzeq",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 80,
+        "preview_url": null,
+        "track_number": 6,
+        "type": "track",
+        "uri": "spotify:track:6I86RF3odBlcuZA9Vfjzeq"
+      },
+      "added_at": "2025-09-17T23:03:21Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Necio (feat. Carlos Santana)",
+        "id": "3DKWF8is9hzp84aSxnhlag",
+        "artists": [
+          {
+            "name": "Romeo Santos",
+            "id": "5lwmRuXgjX8xIwlnauTZIP",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/5lwmRuXgjX8xIwlnauTZIP"
+            },
+            "href": "https://api.spotify.com/v1/artists/5lwmRuXgjX8xIwlnauTZIP",
+            "type": "artist",
+            "uri": "spotify:artist:5lwmRuXgjX8xIwlnauTZIP"
+          },
+          {
+            "name": "Carlos Santana",
+            "id": "0MsXN56oNCyqorqEPViWgQ",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/0MsXN56oNCyqorqEPViWgQ"
+            },
+            "href": "https://api.spotify.com/v1/artists/0MsXN56oNCyqorqEPViWgQ",
+            "type": "artist",
+            "uri": "spotify:artist:0MsXN56oNCyqorqEPViWgQ"
+          }
+        ],
+        "album": {
+          "name": "Fórmula, Vol. 2 (Deluxe Edition)",
+          "id": "17HsiXfqKUPoTP6Y5ebs1L",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Romeo Santos",
+              "id": "5lwmRuXgjX8xIwlnauTZIP",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/5lwmRuXgjX8xIwlnauTZIP"
+              },
+              "href": "https://api.spotify.com/v1/artists/5lwmRuXgjX8xIwlnauTZIP",
+              "type": "artist",
+              "uri": "spotify:artist:5lwmRuXgjX8xIwlnauTZIP"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/17HsiXfqKUPoTP6Y5ebs1L"
+          },
+          "href": "https://api.spotify.com/v1/albums/17HsiXfqKUPoTP6Y5ebs1L",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b273e9da42890bbd629df1e8f640",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e02e9da42890bbd629df1e8f640",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d00004851e9da42890bbd629df1e8f640",
+              "width": 64
+            }
+          ],
+          "release_date": "2014-02-25",
+          "release_date_precision": "day",
+          "total_tracks": 19,
+          "type": "album",
+          "uri": "spotify:album:17HsiXfqKUPoTP6Y5ebs1L"
+        },
+        "duration_ms": 264266,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSD11300471"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3DKWF8is9hzp84aSxnhlag"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3DKWF8is9hzp84aSxnhlag",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 77,
+        "preview_url": null,
+        "track_number": 3,
+        "type": "track",
+        "uri": "spotify:track:3DKWF8is9hzp84aSxnhlag"
+      },
+      "added_at": "2025-09-17T23:03:50Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    }
+  ],
+  "limit": 100,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 4
+}

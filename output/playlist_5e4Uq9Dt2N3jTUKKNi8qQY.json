@@ -1,0 +1,1378 @@
+{
+  "href": "https://api.spotify.com/v1/playlists/5e4Uq9Dt2N3jTUKKNi8qQY/tracks?offset=0&limit=100&additional_types=track",
+  "items": [
+    {
+      "track": {
+        "name": "Carita Linda",
+        "id": "4Xpt2bVLKFvlL5agz7cBTj",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 203463,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USQX92501238"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/4Xpt2bVLKFvlL5agz7cBTj"
+        },
+        "href": "https://api.spotify.com/v1/tracks/4Xpt2bVLKFvlL5agz7cBTj",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:4Xpt2bVLKFvlL5agz7cBTj"
+      },
+      "added_at": "2025-09-27T08:13:49Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Caribeño",
+        "id": "3AMxTv6sNAE4gDfqs1eTI4",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          },
+          {
+            "name": "Saso",
+            "id": "7z3W8OunO3RH0quodR8Zsu",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/7z3W8OunO3RH0quodR8Zsu"
+            },
+            "href": "https://api.spotify.com/v1/artists/7z3W8OunO3RH0quodR8Zsu",
+            "type": "artist",
+            "uri": "spotify:artist:7z3W8OunO3RH0quodR8Zsu"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 249974,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500583"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3AMxTv6sNAE4gDfqs1eTI4"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3AMxTv6sNAE4gDfqs1eTI4",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 2,
+        "type": "track",
+        "uri": "spotify:track:3AMxTv6sNAE4gDfqs1eTI4"
+      },
+      "added_at": "2025-09-27T08:13:52Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "GuabanSexxx",
+        "id": "6W2yL4Zfe2WoaSLj7xPJiM",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 161055,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSD12500580"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6W2yL4Zfe2WoaSLj7xPJiM"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6W2yL4Zfe2WoaSLj7xPJiM",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 3,
+        "type": "track",
+        "uri": "spotify:track:6W2yL4Zfe2WoaSLj7xPJiM"
+      },
+      "added_at": "2025-09-27T08:13:55Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Buenos Términos",
+        "id": "33l8KODrIwwt1QthRjvR2w",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 148462,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500507"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/33l8KODrIwwt1QthRjvR2w"
+        },
+        "href": "https://api.spotify.com/v1/tracks/33l8KODrIwwt1QthRjvR2w",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 4,
+        "type": "track",
+        "uri": "spotify:track:33l8KODrIwwt1QthRjvR2w"
+      },
+      "added_at": "2025-09-27T08:13:56Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "SILENCIO",
+        "id": "4q8bfTmtDfgLGmDc5IuoIQ",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 234461,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500584"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/4q8bfTmtDfgLGmDc5IuoIQ"
+        },
+        "href": "https://api.spotify.com/v1/tracks/4q8bfTmtDfgLGmDc5IuoIQ",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 5,
+        "type": "track",
+        "uri": "spotify:track:4q8bfTmtDfgLGmDc5IuoIQ"
+      },
+      "added_at": "2025-09-27T08:13:56Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "El Cuc0.0",
+        "id": "3yBx8j3hVNawnmlrBf3EHR",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          },
+          {
+            "name": "Jey One",
+            "id": "0B4uq7LA4vdVwFPDoOcVtw",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/0B4uq7LA4vdVwFPDoOcVtw"
+            },
+            "href": "https://api.spotify.com/v1/artists/0B4uq7LA4vdVwFPDoOcVtw",
+            "type": "artist",
+            "uri": "spotify:artist:0B4uq7LA4vdVwFPDoOcVtw"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 141238,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500585"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3yBx8j3hVNawnmlrBf3EHR"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3yBx8j3hVNawnmlrBf3EHR",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 6,
+        "type": "track",
+        "uri": "spotify:track:3yBx8j3hVNawnmlrBf3EHR"
+      },
+      "added_at": "2025-09-27T08:13:57Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "CONTRABANDO",
+        "id": "6Wr4xBLqAAXHrtiUghxEwL",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          },
+          {
+            "name": "Wisin",
+            "id": "3E6xrwgnVfYCrCs0ePERDz",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/3E6xrwgnVfYCrCs0ePERDz"
+            },
+            "href": "https://api.spotify.com/v1/artists/3E6xrwgnVfYCrCs0ePERDz",
+            "type": "artist",
+            "uri": "spotify:artist:3E6xrwgnVfYCrCs0ePERDz"
+          },
+          {
+            "name": "Ñengo Flow",
+            "id": "12vb80Km0Ew53ABfJOepVz",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/12vb80Km0Ew53ABfJOepVz"
+            },
+            "href": "https://api.spotify.com/v1/artists/12vb80Km0Ew53ABfJOepVz",
+            "type": "artist",
+            "uri": "spotify:artist:12vb80Km0Ew53ABfJOepVz"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 175408,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500586"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6Wr4xBLqAAXHrtiUghxEwL"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6Wr4xBLqAAXHrtiUghxEwL",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 7,
+        "type": "track",
+        "uri": "spotify:track:6Wr4xBLqAAXHrtiUghxEwL"
+      },
+      "added_at": "2025-09-27T08:13:58Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Nostalgia de Otoño",
+        "id": "3a8cAWPzyD3xv1hCNR4f74",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          },
+          {
+            "name": "De La Rose",
+            "id": "54seKvtsZauR1iauN0ptpo",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/54seKvtsZauR1iauN0ptpo"
+            },
+            "href": "https://api.spotify.com/v1/artists/54seKvtsZauR1iauN0ptpo",
+            "type": "artist",
+            "uri": "spotify:artist:54seKvtsZauR1iauN0ptpo"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 198400,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500591"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3a8cAWPzyD3xv1hCNR4f74"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3a8cAWPzyD3xv1hCNR4f74",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 8,
+        "type": "track",
+        "uri": "spotify:track:3a8cAWPzyD3xv1hCNR4f74"
+      },
+      "added_at": "2025-09-27T08:13:59Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "NÁUFRAGOS",
+        "id": "2pM3EaNKFnpa646xtCiREJ",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 211833,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500589"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/2pM3EaNKFnpa646xtCiREJ"
+        },
+        "href": "https://api.spotify.com/v1/tracks/2pM3EaNKFnpa646xtCiREJ",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 9,
+        "type": "track",
+        "uri": "spotify:track:2pM3EaNKFnpa646xtCiREJ"
+      },
+      "added_at": "2025-09-27T08:14:00Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Besito en la Frente",
+        "id": "2b7Si9I7PtpgGOnUE8Qogd",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 161622,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSD12500590"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/2b7Si9I7PtpgGOnUE8Qogd"
+        },
+        "href": "https://api.spotify.com/v1/tracks/2b7Si9I7PtpgGOnUE8Qogd",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 10,
+        "type": "track",
+        "uri": "spotify:track:2b7Si9I7PtpgGOnUE8Qogd"
+      },
+      "added_at": "2025-09-27T08:14:01Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Santa",
+        "id": "42opfOB0VjHYB91sYjmtOM",
+        "artists": [
+          {
+            "name": "Rvssian",
+            "id": "1fctva4kpRbg2k3v7kwRuS",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1fctva4kpRbg2k3v7kwRuS"
+            },
+            "href": "https://api.spotify.com/v1/artists/1fctva4kpRbg2k3v7kwRuS",
+            "type": "artist",
+            "uri": "spotify:artist:1fctva4kpRbg2k3v7kwRuS"
+          },
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          },
+          {
+            "name": "Ayra Starr",
+            "id": "3ZpEKRjHaHANcpk10u6Ntq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/3ZpEKRjHaHANcpk10u6Ntq"
+            },
+            "href": "https://api.spotify.com/v1/artists/3ZpEKRjHaHANcpk10u6Ntq",
+            "type": "artist",
+            "uri": "spotify:artist:3ZpEKRjHaHANcpk10u6Ntq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 193038,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSD12400112"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/42opfOB0VjHYB91sYjmtOM"
+        },
+        "href": "https://api.spotify.com/v1/tracks/42opfOB0VjHYB91sYjmtOM",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 11,
+        "type": "track",
+        "uri": "spotify:track:42opfOB0VjHYB91sYjmtOM"
+      },
+      "added_at": "2025-09-27T08:14:02Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Callejón de los Secretos",
+        "id": "1hFyhyZygYYD35G2cEuwR0",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          },
+          {
+            "name": "Mon Laferte",
+            "id": "4boI7bJtmB1L3b1cuL75Zr",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/4boI7bJtmB1L3b1cuL75Zr"
+            },
+            "href": "https://api.spotify.com/v1/artists/4boI7bJtmB1L3b1cuL75Zr",
+            "type": "artist",
+            "uri": "spotify:artist:4boI7bJtmB1L3b1cuL75Zr"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 224650,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500587"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/1hFyhyZygYYD35G2cEuwR0"
+        },
+        "href": "https://api.spotify.com/v1/tracks/1hFyhyZygYYD35G2cEuwR0",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 12,
+        "type": "track",
+        "uri": "spotify:track:1hFyhyZygYYD35G2cEuwR0"
+      },
+      "added_at": "2025-09-27T08:14:03Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "FALSEDAD",
+        "id": "6aMMil1xvOQHF3rqC7gsbI",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 189312,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "USSD12500588"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6aMMil1xvOQHF3rqC7gsbI"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6aMMil1xvOQHF3rqC7gsbI",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 13,
+        "type": "track",
+        "uri": "spotify:track:6aMMil1xvOQHF3rqC7gsbI"
+      },
+      "added_at": "2025-09-27T08:14:04Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Mirando Al Cielo",
+        "id": "36OCbZGpcEUaris4NTVivu",
+        "artists": [
+          {
+            "name": "Rauw Alejandro",
+            "id": "1mcTU81TzQhprhouKaTkpq",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+            },
+            "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+            "type": "artist",
+            "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+          }
+        ],
+        "album": {
+          "name": "Cosa Nuestra: Capítulo 0",
+          "id": "752aUI4EPYOGrNuo74pmCR",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Rauw Alejandro",
+              "id": "1mcTU81TzQhprhouKaTkpq",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1mcTU81TzQhprhouKaTkpq"
+              },
+              "href": "https://api.spotify.com/v1/artists/1mcTU81TzQhprhouKaTkpq",
+              "type": "artist",
+              "uri": "spotify:artist:1mcTU81TzQhprhouKaTkpq"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/752aUI4EPYOGrNuo74pmCR"
+          },
+          "href": "https://api.spotify.com/v1/albums/752aUI4EPYOGrNuo74pmCR",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2732d96d9a5147ed656693513b5",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e022d96d9a5147ed656693513b5",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048512d96d9a5147ed656693513b5",
+              "width": 64
+            }
+          ],
+          "release_date": "2025-09-26",
+          "release_date_precision": "day",
+          "total_tracks": 14,
+          "type": "album",
+          "uri": "spotify:album:752aUI4EPYOGrNuo74pmCR"
+        },
+        "duration_ms": 164187,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSD12500592"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/36OCbZGpcEUaris4NTVivu"
+        },
+        "href": "https://api.spotify.com/v1/tracks/36OCbZGpcEUaris4NTVivu",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 0,
+        "preview_url": null,
+        "track_number": 14,
+        "type": "track",
+        "uri": "spotify:track:36OCbZGpcEUaris4NTVivu"
+      },
+      "added_at": "2025-09-27T08:14:05Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    }
+  ],
+  "limit": 100,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 14
+}
