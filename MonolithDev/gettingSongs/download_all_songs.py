@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Script to download the first song from a saved Spotify playlist JSON file using YouTube via yt-dlp.
-Usage: python download_first_song.py <playlist_id>
+Script to download all songs from a saved Spotify playlist JSON file using YouTube via yt-dlp.
+Usage: python download_all_songs.py <playlist_id>
 
 The playlist JSON file must exist in the output/ directory with naming scheme: playlist_{playlist_id}.json
+Downloads are idempotent - already downloaded tracks will be skipped.
 """
 
 import sys
@@ -13,15 +14,15 @@ import yt_dlp
 from models import PlaylistResponse, PlaylistTrack, Track
 
 
-def get_first_track_from_file(playlist_id):
+def get_all_tracks_from_file(playlist_id):
     """
-    Fetch the first track from a saved playlist JSON file.
+    Fetch all tracks from a saved playlist JSON file.
 
     Args:
         playlist_id (str): Spotify playlist ID (e.g., 5evvXuuNDgAHbPDmojLZgD)
 
     Returns:
-        Track: The first track from the playlist, or None if error
+        List[Track]: List of all tracks from the playlist, or None if error
     """
     try:
         # Construct file path
@@ -45,14 +46,20 @@ def get_first_track_from_file(playlist_id):
             print("No songs found in this playlist file.")
             return None
 
-        # Get the first track
-        first_playlist_track = playlist_response.items[0]
+        # Extract all available tracks
+        tracks = []
+        for playlist_track in playlist_response.items:
+            if playlist_track.track:
+                tracks.append(playlist_track.track)
+            else:
+                print(f"Skipping unavailable track at position {len(tracks) + 1}")
 
-        if not first_playlist_track.track:
-            print("First track in playlist is not available.")
+        if not tracks:
+            print("No available tracks found in playlist.")
             return None
 
-        return first_playlist_track.track
+        print(f"Found {len(tracks)} tracks in playlist")
+        return tracks
 
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON file: {e}")
@@ -112,6 +119,26 @@ def search_youtube_for_track(track):
     except Exception as e:
         print(f"Error searching YouTube: {e}")
         return None
+
+
+def is_track_downloaded(youtube_id, output_dir="downloads"):
+    """
+    Check if a track is already downloaded based on YouTube ID.
+
+    Args:
+        youtube_id (str): YouTube video ID
+        output_dir (str): Directory to check for downloads
+
+    Returns:
+        bool: True if track is already downloaded
+    """
+    output_path = Path(output_dir)
+    if not output_path.exists():
+        return False
+
+    # Look for any file with this YouTube ID
+    id_files = list(output_path.glob(f"{youtube_id}__*"))
+    return len(id_files) > 0
 
 
 def extract_youtube_id(video_url):
@@ -210,39 +237,65 @@ def download_audio_from_youtube(video_url, output_dir="downloads"):
 def main():
     """Main function to handle command line arguments."""
     if len(sys.argv) != 2:
-        print("Usage: python download_first_song.py <playlist_id>")
+        print("Usage: python download_all_songs.py <playlist_id>")
         print("\nExamples:")
-        print("  python download_first_song.py 5evvXuuNDgAHbPDmojLZgD")
-        print("  python download_first_song.py 37i9dQZF1DXcBWIGoYBM5M")
+        print("  python download_all_songs.py 5evvXuuNDgAHbPDmojLZgD")
+        print("  python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M")
         print("\nNote: The playlist file must exist in output/ directory.")
         print("Run get_playlist_songs.py first to generate the playlist file.")
         sys.exit(1)
 
     playlist_id = sys.argv[1]
 
-    print(f"Reading first song from playlist file: playlist_{playlist_id}.json")
+    print(f"Reading all songs from playlist file: playlist_{playlist_id}.json")
 
-    # Get the first track from the playlist file
-    track = get_first_track_from_file(playlist_id)
-    if not track:
-        print("Failed to read track from playlist file.")
+    # Get all tracks from the playlist file
+    tracks = get_all_tracks_from_file(playlist_id)
+    if not tracks:
+        print("Failed to read tracks from playlist file.")
         sys.exit(1)
 
-    print(f"First track: {track}")
+    print(f"Starting download of {len(tracks)} tracks...")
 
-    # Search YouTube for the track
-    video_url = search_youtube_for_track(track)
-    if not video_url:
-        print("Failed to find track on YouTube.")
-        sys.exit(1)
+    successful_downloads = 0
+    skipped_downloads = 0
+    failed_downloads = 0
 
-    # Download the audio
-    downloaded_file = download_audio_from_youtube(video_url)
-    if not downloaded_file:
-        print("Failed to download audio.")
-        sys.exit(1)
+    for i, track in enumerate(tracks, 1):
+        print(f"\n--- Track {i}/{len(tracks)}: {track} ---")
 
-    print(f"\n✅ Successfully downloaded: {downloaded_file}")
+        # Search YouTube for the track
+        video_url = search_youtube_for_track(track)
+        if not video_url:
+            print(f"❌ Failed to find track on YouTube: {track}")
+            failed_downloads += 1
+            continue
+
+        # Check if already downloaded
+        youtube_id = extract_youtube_id(video_url)
+        if is_track_downloaded(youtube_id):
+            print(f"⏭️  Already downloaded, skipping: {track}")
+            skipped_downloads += 1
+            continue
+
+        # Download the audio
+        downloaded_file = download_audio_from_youtube(video_url)
+        if downloaded_file:
+            print(f"✅ Successfully downloaded: {downloaded_file}")
+            successful_downloads += 1
+        else:
+            print(f"❌ Failed to download: {track}")
+            failed_downloads += 1
+
+    # Print summary
+    print(f"\n{'='*50}")
+    print(f"DOWNLOAD SUMMARY")
+    print(f"{'='*50}")
+    print(f"Total tracks: {len(tracks)}")
+    print(f"✅ Successfully downloaded: {successful_downloads}")
+    print(f"⏭️  Skipped (already downloaded): {skipped_downloads}")
+    print(f"❌ Failed: {failed_downloads}")
+    print(f"{'='*50}")
 
 
 if __name__ == "__main__":
