@@ -28,7 +28,7 @@ The project follows an 8-stage pipeline:
 ### Python Standards
 - Use type hints for all function parameters and return values
 - Follow PEP 8 with Black formatter (88 character line length)
-- Use dataclasses for data structures (see graph.py example)
+- Use pydantic for data structures (see graph.py example)
 - Prefer async/await for I/O operations
 - Use pathlib for file operations
 - Use logging instead of print statements
