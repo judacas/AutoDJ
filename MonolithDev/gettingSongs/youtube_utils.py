@@ -8,8 +8,10 @@ import json
 from pathlib import Path
 from enum import Enum
 import yt_dlp
-from models import PlaylistResponse, PlaylistTrack, Track
+from dj_LLM import DJQueryGenerator
+from models import PlaylistResponse
 from logging_config import get_module_logger
+import sys
 
 # Set up logger for this module
 logger = get_module_logger(__name__)
@@ -80,7 +82,7 @@ def get_all_tracks_from_file(playlist_id):
         return None
 
 
-def create_search_query(track, query_type=QueryType.SONG):
+def create_search_queries(track, query_type=QueryType.SONG) -> list[str]:
     """
     Create a search query for YouTube based on track and query type.
 
@@ -101,10 +103,13 @@ def create_search_query(track, query_type=QueryType.SONG):
         # - Analyzing video duration to match track length
         # - Checking video metadata for better matching
 
-        return f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
+        return [
+            f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
+        ]
+
     elif query_type == QueryType.MIX:
-        # Placeholder for mix search query - can be customized later
-        return f"{track.artist_names} - {track.name} DJ mix"
+        query_generator = DJQueryGenerator()
+        return query_generator.generate_queries(track).queries
     else:
         raise ValueError(
             f"Unknown query_type: {query_type}. Must be QueryType.SONG or QueryType.MIX"
@@ -122,9 +127,11 @@ def search_youtube_for_track(track, query_type=QueryType.SONG):
     Returns:
         str: YouTube URL of the best match, or None if not found
     """
-    search_query = create_search_query(track, query_type)
+    search_queries = create_search_queries(track, query_type)
 
-    logger.info(f"Searching YouTube for: {search_query}")
+    logger.info(
+        f"Searching YouTube with {len(search_queries)} queries: {search_queries}"
+    )
 
     # Configure yt-dlp for search
     ydl_opts = {
@@ -134,33 +141,52 @@ def search_youtube_for_track(track, query_type=QueryType.SONG):
         "default_search": "ytsearch1:",  # Search YouTube and get top result
     }
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Search for the track
-            search_url = f"ytsearch1:{search_query}"
-            info = ydl.extract_info(search_url, download=False)
+    # Try each query until we find a result
+    for i, search_query in enumerate(search_queries):
+        try:
+            logger.info(f"Trying query {i+1}/{len(search_queries)}: {search_query}")
 
-            if info and "entries" in info and info["entries"]:
-                # Get the first (best) result
-                best_match = info["entries"][0]
-                video_url = best_match.get("webpage_url") or best_match.get("url")
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                # Search for the track
+                search_url = f"ytsearch1:{search_query}"
+                info = ydl.extract_info(search_url, download=False)
 
-                if video_url:
-                    logger.info(
-                        f"Found YouTube video: {best_match.get('title', 'Unknown title')}"
-                    )
-                    logger.debug(f"URL: {video_url}")
-                    return video_url
+                if info and "entries" in info and info["entries"]:
+                    # Get the first (best) result
+                    best_match = info["entries"][0]
+                    video_url = best_match.get("webpage_url") or best_match.get("url")
+
+                    if video_url:
+                        logger.info(
+                            f"Found YouTube video with query {i+1}: {best_match.get('title', 'Unknown title')}"
+                        )
+                        logger.debug(f"URL: {video_url}")
+                        if downloaded_file := download_audio_from_youtube(video_url):
+                            logger.info(
+                                f"✅ Successfully downloaded: {downloaded_file}"
+                            )
+                        else:
+                            logger.warning(
+                                f"❌ Failed to download audio for: {video_url}"
+                            )
+                        return video_url
+                    else:
+                        logger.warning(
+                            f"No valid URL found in search results for query {i+1}"
+                        )
+                        continue
                 else:
-                    logger.warning("No valid URL found in search results")
-                    return None
-            else:
-                logger.warning("No search results found")
-                return None
+                    logger.warning(f"No search results found for query {i+1}")
+                    continue
 
-    except Exception as e:
-        logger.error(f"Error searching YouTube: {e}")
-        return None
+        except Exception as e:
+            logger.warning(f"Error with query {i+1} '{search_query}': {e}")
+            continue
+
+    logger.warning(
+        f"No YouTube results found for any of the {len(search_queries)} queries"
+    )
+    return None
 
 
 def is_track_downloaded(youtube_id, output_dir="downloads"):

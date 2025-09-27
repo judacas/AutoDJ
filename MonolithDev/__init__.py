@@ -1,4 +1,1 @@
-"""
-AutoDJ MonolithDev Package
-Main package for AutoDJ development modules.
-"""
+import gettingSongs.config
