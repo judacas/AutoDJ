@@ -80,14 +80,14 @@ def search_youtube_for_track(track):
         str: YouTube URL of the best match, or None if not found
     """
     # Create search query to prefer official audio, avoid music videos and karaoke
-    search_query = f"{track.artist_names} - {track.name} audio NOT music video NOT karaoke NOT cover"
+    search_query = f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert"
 
     print(f"Searching YouTube for: {search_query}")
 
     # Configure yt-dlp for search
     ydl_opts = {
-        "quiet": True,
-        "no_warnings": True,
+        "quiet": False,
+        "no_warnings": False,
         "extract_flat": True,
         "default_search": "ytsearch1:",  # Search YouTube and get top result
     }
