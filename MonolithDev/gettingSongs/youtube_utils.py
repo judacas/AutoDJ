@@ -92,7 +92,7 @@ def create_search_query(track, query_type=QueryType.SONG):
         str: Formatted search query
     """
     if query_type == QueryType.SONG:
-        # TODO: Improve search queries - currently finds funky results sometimes 
+        # TODO: Improve search queries - currently finds funky results sometimes
         # (e.g., clean versions instead of normal, still gets covers/remixes occasionally)
         # Consider:
         # - Adding more exclusion terms (-clean -radio -edit -version -remaster)
@@ -100,12 +100,11 @@ def create_search_query(track, query_type=QueryType.SONG):
         # - Using multiple search strategies with fallbacks
         # - Analyzing video duration to match track length
         # - Checking video metadata for better matching
-        
-        # Create search query to prefer official audio, avoid music videos and karaoke
+
         return f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
     elif query_type == QueryType.MIX:
         # Placeholder for mix search query - can be customized later
-        return f"{track.artist_names} - {track.name} mix"
+        return f"{track.artist_names} - {track.name} DJ mix"
     else:
         raise ValueError(
             f"Unknown query_type: {query_type}. Must be QueryType.SONG or QueryType.MIX"
