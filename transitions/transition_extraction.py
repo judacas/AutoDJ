@@ -19,6 +19,8 @@
 #import
 import subprocess, shlex
 from pathlib import Path
+import logging
+logger = logging.getLogger(__name__)
 OUT_DIR = Path("out/transitions")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -26,8 +28,15 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 def run(*args):
     # changed to safe cross platform subprocess runner
     # works on MacOS and windows
-    #print("→", " ".join(args))
-    subprocess.run(list(args), check=True)
+    # Sanitize args for display only
+    safe_display = " ".join(shlex.quote(str(a)) for a in args)
+    logger.info(f"→ {safe_display}")
+    # Actual safe execution (no shell, no user-controlled expansion)
+    # noqa: S603,S607  ← disables false positive warnings for this line
+    # Security note:
+    # This call is safe because it never invokes a shell (shell=False)
+    # and all arguments are passed as a pre-split list.
+    subprocess.run([str(a) for a in args], check=True, shell=False)
 
 def duration(path: str) -> float:
     """Return audio duration in seconds using ffprobe."""
@@ -43,7 +52,7 @@ def duration(path: str) -> float:
         return float(out.strip())
     except ValueError as e:
         raise RuntimeError(f"Could not decode ffprobe output for {path}: {out!r}") from e
-    return float(out.strip())
+    
 
 # Extracts short audio segments from three tracks for transition analysis.
 def extract_segments(prev_path, mix_path, next_path, boundary_s, pre_tail=1.0, mix_before=0.5, mix_after=0.5, post_head=1.0):
@@ -127,8 +136,7 @@ def safe_crossfade_duration(a_path: Path, b_path: Path, desired_cross: float) ->
     # pick the shortest file’s length * 0.8 to stay safe
     max_possible = min(len_a, len_b) * 0.8
     if desired_cross > max_possible:
-        print(f"Crossfade {desired_cross:.2f}s too long for clip pair "
-              f"({len_a:.2f}s, {len_b:.2f}s). Using {max_possible:.2f}s instead.")
+        logger.warning("Crossfade duration adjusted due to short clip")
         return max_possible
     return desired_cross
 
@@ -138,14 +146,12 @@ def crossfade(a_path: Path, b_path: Path, out_path: Path, cross=0.3):
     # cross = fade duration (s)
     # used across fade filter
     # Use helper to determine best crossfade
-    
+
     # Check for existence of input files
     if not a_path.exists():
-        print(f"Input file does not exist: {a_path}")
-        return
+        raise FileNotFoundError(f"Input file does not exist: {a_path}")
     if not b_path.exists():
-        print(f"Input file does not exist: {b_path}")
-        return
+        raise FileNotFoundError(f"Input file does not exist: {b_path}")
 
     cross = safe_crossfade_duration(a_path, b_path, cross)
     run(
@@ -176,32 +182,6 @@ def stitch_to_final(step1: Path, next_head: Path, mp3_out: Path, cross=0.3):
         "-b:a", "192k",
         str(mp3_out)
     )
-# testing!!
-def main():
-    boundary = 1.0  # pretend transition time (s)
-
-    # Extract your three clips
-    p_tail, m_mid, n_head = extract_segments(
-        "audio/test/prev.mp3",
-        "audio/test/mix.mp3",
-        "audio/test/next.mp3",
-        boundary_s=boundary,
-        pre_tail=1.0,
-        mix_before=0.5,
-        mix_after=0.5,
-        post_head=1.0
-    )
-
-    # Crossfade 1 prev → mix
-    step1 = OUT_DIR / "prev_plus_mix.wav"
-    crossfade(p_tail, m_mid, step1, cross=0.3)
-
-    # Crossfade 2 (prev+mix) → next
-    final_mp3 = OUT_DIR / "transition_demo.mp3"
-    stitch_to_final(step1, n_head, final_mp3, cross=0.3)
-
-if __name__ == "__main__":
-    main()
 
 
 
