@@ -92,8 +92,17 @@ def create_search_query(track, query_type=QueryType.SONG):
         str: Formatted search query
     """
     if query_type == QueryType.SONG:
+        # TODO: Improve search queries - currently finds funky results sometimes 
+        # (e.g., clean versions instead of normal, still gets covers/remixes occasionally)
+        # Consider:
+        # - Adding more exclusion terms (-clean -radio -edit -version -remaster)
+        # - Prioritizing official channels/verified artists
+        # - Using multiple search strategies with fallbacks
+        # - Analyzing video duration to match track length
+        # - Checking video metadata for better matching
+        
         # Create search query to prefer official audio, avoid music videos and karaoke
-        return f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert"
+        return f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
     elif query_type == QueryType.MIX:
         # Placeholder for mix search query - can be customized later
         return f"{track.artist_names} - {track.name} mix"
@@ -342,9 +351,6 @@ def download_tracks_from_playlist(playlist_id, query_type=QueryType.SONG):
     logger.info(f"❌ Failed: {failed_downloads}")
     logger.info(f"{'='*50}")
 
-
-if __name__ == "__main__":
-    main()
     # Return summary
     return {
         "total_tracks": len(tracks),
@@ -352,6 +358,10 @@ if __name__ == "__main__":
         "skipped_downloads": skipped_downloads,
         "failed_downloads": failed_downloads,
     }
+
+
+if __name__ == "__main__":
+    main()
 
 
 def print_download_summary(summary):
