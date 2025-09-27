@@ -66,7 +66,6 @@ High-level architecture and structure
     - SongNode: id + metadata
     - TransitionEdge: source/target song_id, timestamp, mix_id, confidence, extra
     - DirectedSongGraph: add_song, add_transition, get_neighbors, get_out_edges, get_song
-  - MonolithDev/gettingSongs/scrapper.py is a placeholder for future ingestion.
 
 - Intended layout (from Cursor rules)
   - Keep MVP (local, simple) and Full (Azure Functions, multi-source) in separate modules.

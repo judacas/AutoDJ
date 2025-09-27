@@ -38,12 +38,44 @@ def get_playlist_songs(playlist_uri):
         else:
             playlist_id = playlist_uri
 
-        # Get playlist tracks
-        raw_results = sp.playlist_tracks(playlist_id)
+        # Get playlist tracks with pagination to collect all pages
+        all_tracks = []
+        offset = 0
+        limit = 100  # Spotify's maximum per request
+        last_response = None
+
+        while True:
+            raw_results = sp.playlist_tracks(playlist_id, limit=limit, offset=offset)
+
+            # Store the last valid response for metadata
+            if raw_results:
+                last_response = raw_results
+
+            # Add tracks from this page
+            if raw_results and raw_results.get("items"):
+                all_tracks.extend(raw_results["items"])
+
+            # Check if there are more pages
+            if not raw_results or not raw_results.get("next"):
+                break
+
+            # Update offset for next page
+            offset += limit
+
+        # Create aggregated response with all tracks
+        aggregated_response = {
+            "href": last_response.get("href", "") if last_response else "",
+            "items": all_tracks,
+            "limit": last_response.get("limit", limit) if last_response else limit,
+            "next": None,  # No more pages
+            "offset": 0,  # Reset offset since we have all items
+            "previous": None,
+            "total": len(all_tracks),
+        }
 
         # Parse response using Pydantic model
         try:
-            playlist_response = PlaylistResponse.model_validate(raw_results)
+            playlist_response = PlaylistResponse.model_validate(aggregated_response)
         except Exception as e:
             print(f"Error parsing playlist response: {e}")
             return None
