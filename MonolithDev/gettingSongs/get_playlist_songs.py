@@ -73,7 +73,7 @@ def save_playlist_to_json(playlist_response, playlist_id, output_dir="output"):
     """
     # Create output directory if it doesn't exist
     output_path = Path(output_dir)
-    output_path.mkdir(exist_ok=True)
+    output_path.mkdir(parents=True, exist_ok=True)
 
     # Create filename with playlist ID
     filename = f"playlist_{playlist_id}.json"
