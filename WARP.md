@@ -3,7 +3,7 @@
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
 Repo overview
-- Language/tooling: Python (3.13). Testing via pytest (+ pytest-asyncio, pytest-cov). Formatting/linting via Black, isort, Flake8, MyPy, Pylint. FastAPI and Uvicorn are included for a future API layer. Azure SDKs (Blob Storage, Functions) and PostgreSQL stack (psycopg2 + SQLAlchemy) are present. FFmpeg is required for audio processing.
+- Language/tooling: Python (3.13). Testing via pytest (+ pytest-asyncio, pytest-cov). Formatting/linting via Black, isort, Flake8, MyPy, Pylint. FastAPI and Uvicorn are included for a future API layer. Azure SDKs (Blob Storage, Functions) and PostgreSQL stack (psycopg2 + SQLAlchemy + pydantic) are present. FFmpeg is required for audio processing.
 - Purpose (from README): “app that mixes songs together automatically.”
 - Rules (from .cursor/.cursorrules): Project follows an 8-stage pipeline (source → related mixes → blob storage → fingerprinting → recognition → transition detection → transition extraction → transition graph). Python standards: type hints, Black (88 cols), dataclasses, async I/O, pathlib, logging. Separate MVP vs Full implementations; Azure-specific code in azure/; configuration in config/. Storage: PostgreSQL for structured data; Azure Blob for audio.
 
@@ -81,9 +81,6 @@ High-level architecture and structure
   - Unit tests for core functions (e.g., graph operations, detection logic units).
   - Integration tests across pipeline boundaries; mock external services (YouTube, Azure).
   - Include pytest-asyncio for async I/O code.
-
-- Dev container
-  - A .devcontainer/Dockerfile (python:3.13) exists for editor-based dev containers. It’s minimal and can be extended to install requirements/FFmpeg.
 
 References
 - README.md: brief description.

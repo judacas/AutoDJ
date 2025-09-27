@@ -3,6 +3,11 @@
 ## Project Overview
 AutoDJ is an application that automatically mixes songs together by analyzing DJ mixes, extracting transitions, and building a graph of song relationships.
 
+# KEEP THINGS SIMPLE
+NO OVERENGINEERING EVERYTHING
+this is for a 36 hour hackathon
+
+
 ## Architecture & Pipeline
 The project follows an 8-stage pipeline:
 1. Get Source Song (YouTube/multi-source search)
@@ -41,7 +46,7 @@ The project follows an 8-stage pipeline:
 - Implement graceful degradation for MVP features
 
 ### Data Models
-- Use dataclasses for structured data (SongNode, TransitionEdge pattern)
+- Use pydantic for structured data (SongNode, TransitionEdge pattern)
 - Include metadata fields for extensibility
 - Use UUIDs for unique identifiers
 - Store timestamps as datetime objects
