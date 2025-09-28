@@ -222,26 +222,26 @@ def _ensure_identifier(prefix: str, *candidates: Optional[str]) -> str:
 
 def _mask_database_url(url: str) -> str:
     """Mask sensitive information in database URL for safe logging."""
-    if not url or '@' not in url:
+    if not url or "@" not in url:
         return url
-    
+
     try:
-        parts = url.split('@')
+        parts = url.split("@")
         if len(parts) != 2:
             return url
-        
+
         user_pass_part = parts[0]
         host_part = parts[1]
-        
-        if ':' in user_pass_part:
-            user_pass = user_pass_part.split('://', 1)
+
+        if ":" in user_pass_part:
+            user_pass = user_pass_part.split("://", 1)
             if len(user_pass) == 2:
                 scheme = user_pass[0]
                 credentials = user_pass[1]
-                if ':' in credentials:
-                    user = credentials.split(':')[0]
+                if ":" in credentials:
+                    user = credentials.split(":")[0]
                     return f"{scheme}://{user}:***@{host_part}"
-        
+
         return url
     except Exception:
         # If anything goes wrong, return a safe fallback

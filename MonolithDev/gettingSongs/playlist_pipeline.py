@@ -6,9 +6,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Optional
 
-from logging_config import get_module_logger
-
 from get_playlist_songs import SpotifyPlaylistService
+from logging_config import get_module_logger
 from models import PlaylistResponse
 from youtube_utils import QueryType, YouTubeDownloader
 

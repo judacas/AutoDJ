@@ -9,9 +9,8 @@ import sys
 from pathlib import Path
 
 from logging_config import get_module_logger
-
-from playlist_pipeline import PlaylistPipeline
 from models import PlaylistResponse
+from playlist_pipeline import PlaylistPipeline
 from youtube_utils import print_download_summary
 
 logger = get_module_logger(__name__)

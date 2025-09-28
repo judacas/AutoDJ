@@ -2,6 +2,7 @@
 """Download tracks or mixes for a playlist stored in the database."""
 
 import sys
+
 from youtube_utils import QueryType, YouTubeDownloader, print_download_summary
 
 

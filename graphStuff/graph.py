@@ -3,9 +3,9 @@
 
 # CURRENT STATE: Good enough for a while as of 11pm 9/26
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Dict, List, Optional
 
 
 @dataclass

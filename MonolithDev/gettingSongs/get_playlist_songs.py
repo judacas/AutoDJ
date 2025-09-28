@@ -7,12 +7,11 @@ import sys
 from typing import Iterable, Optional
 
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
-
-from database import persist_playlist
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+from database import persist_playlist
 from logging_config import get_module_logger
 from models import PlaylistResponse, PlaylistTrack
+from spotipy.oauth2 import SpotifyClientCredentials
 
 # Set up logger for this module
 logger = get_module_logger(__name__)

@@ -44,7 +44,7 @@ class DJQueryGenerator:
         from config import get_openai_api_key
 
         self.api_key = api_key or get_openai_api_key()
-        
+
         if not self.api_key:
             raise ValueError(
                 "OpenAI API key is required. Set OPENAI_API_KEY environment variable or pass api_key parameter."
