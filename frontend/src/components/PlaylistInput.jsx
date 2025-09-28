@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+
 const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
   const [playlistUrl, setPlaylistUrl] = useState('');
 
@@ -12,9 +13,10 @@ const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
 
   return (
     <div className="text-center space-y-8 animate-entrance">
+      {/* Hero Section */}
       <div className="space-y-6">
-        <div className="space-y-2 relative">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none relative group">
+        <div className="space-y-2">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none">
             <span className="bg-gradient-to-b from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
               Auto
             </span>
@@ -25,6 +27,7 @@ const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
         </div>
       </div>
 
+      {/* Input Section */}
       <div className="max-w-2xl mx-auto space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative group">
@@ -36,6 +39,9 @@ const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
               className="input-premium text-lg py-5"
               disabled={loading}
             />
+
+            {/* Input Enhancement Ring */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none blur-sm"></div>
           </div>
 
           <div className="flex justify-center">
@@ -61,11 +67,18 @@ const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
           </div>
         </form>
 
+        {/* Help Text */}
         <div className="text-center space-y-3">
           <p className="text-base text-gray-400 leading-relaxed">
             Paste a Spotify playlist link and let our AutoDJ create something extraordinary
           </p>
         </div>
+      </div>
+
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-32 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"></div>
       </div>
     </div>
   );
