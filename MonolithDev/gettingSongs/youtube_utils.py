@@ -9,11 +9,10 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Optional
 
+import database
 import yt_dlp
-
 from dj_LLM import DJQueryGenerator
 from logging_config import get_module_logger
-import database
 from models import Track
 
 logger = get_module_logger(__name__)
@@ -239,6 +238,7 @@ class YouTubeDownloader:
             if self._mix_generator is None:
                 try:
                     self._mix_generator = DJQueryGenerator()
+                    pass
                 except Exception as exc:
                     logger.error("Unable to initialise DJ mix query generator: %s", exc)
                     raise RuntimeError(
