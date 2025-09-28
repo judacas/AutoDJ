@@ -3,18 +3,17 @@
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional
 
+import database
 import yt_dlp
-
 from dj_LLM import DJQueryGenerator
 from logging_config import get_module_logger
-from models import PlaylistResponse, Track
+from models import Track
 
 logger = get_module_logger(__name__)
 
@@ -46,30 +45,15 @@ class DownloadSummary:
         }
 
 
-def get_all_tracks_from_file(playlist_id: str) -> Optional[List[Track]]:
-    """Load playlist tracks that were previously persisted to JSON."""
+def get_tracks_from_database(playlist_id: str) -> Optional[List[Track]]:
+    """Load playlist tracks from the database."""
 
-    file_path = Path("output") / f"playlist_{playlist_id}.json"
-    if not file_path.exists():
-        logger.error(f"Playlist file not found: {file_path}")
-        logger.info(
-            "Make sure you have run get_playlist_songs.py first to generate the playlist file."
-        )
-        return None
-
-    try:
-        playlist_data = json.loads(file_path.read_text(encoding="utf-8"))
-        playlist_response = PlaylistResponse.model_validate(playlist_data)
-    except json.JSONDecodeError as exc:
-        logger.error(f"Error parsing JSON file: {exc}")
-        return None
-    except Exception as exc:
-        logger.error(f"Error reading playlist file: {exc}")
-        return None
-
-    tracks = [item.track for item in playlist_response.items if item.track is not None]
+    tracks = database.fetch_tracks_for_playlist(playlist_id)
     if not tracks:
-        logger.warning("No available tracks found in playlist.")
+        logger.error(
+            "No tracks found for playlist %s. Have you fetched it with playlist_full_converter?",
+            playlist_id,
+        )
         return None
 
     logger.info(f"Found {len(tracks)} tracks in playlist")
@@ -152,27 +136,36 @@ class YouTubeDownloader:
         query_type: QueryType,
         max_results_per_track: Optional[int] = None,
     ) -> DownloadSummary:
-        tracks = get_all_tracks_from_file(playlist_id)
+        tracks = get_tracks_from_database(playlist_id)
         if not tracks:
-            raise ValueError("Failed to read tracks from playlist file.")
+            raise ValueError("Failed to load tracks from the database.")
 
         per_track_limit = max_results_per_track or (
             10 if query_type == QueryType.MIX else 1
         )
         summary = DownloadSummary(total_tracks=len(tracks))
 
+        target_dir = self.output_dir / (
+            "mixes" if query_type == QueryType.MIX else "originals"
+        )
+        target_dir.mkdir(parents=True, exist_ok=True)
+
         for index, track in enumerate(tracks, start=1):
             logger.info(f"\n--- Track {index}/{len(tracks)}: {track} ---")
-            self._download_for_track(track, query_type, per_track_limit, summary)
+            self._download_for_track(
+                playlist_id, track, query_type, per_track_limit, summary, target_dir
+            )
 
         return summary
 
     def _download_for_track(
         self,
+        playlist_id: str,
         track: Track,
         query_type: QueryType,
         per_track_limit: int,
         summary: DownloadSummary,
+        target_dir: Path,
     ) -> None:
         queries = self._create_search_queries(track, query_type)
         downloads_for_track = 0
@@ -200,18 +193,26 @@ class YouTubeDownloader:
                 youtube_id = extract_youtube_id(video_url)
                 summary.requested_downloads += 1
 
-                if is_track_downloaded(youtube_id, self.output_dir):
+                if is_track_downloaded(youtube_id, target_dir):
                     logger.info(
                         f"⏭️  Already downloaded, skipping: {result.get('title', 'Unknown title')}"
                     )
                     summary.skipped_downloads += 1
                     continue
 
-                file_path = download_audio_from_youtube(video_url, self.output_dir)
+                file_path = download_audio_from_youtube(video_url, target_dir)
                 if file_path:
                     logger.info(f"✅ Successfully downloaded: {file_path}")
                     summary.successful_downloads += 1
                     downloads_for_track += 1
+                    database.record_download(
+                        playlist_id=playlist_id,
+                        track_id=track.id or track.uri or f"track_{track.name}",
+                        query_type=query_type,
+                        youtube_id=youtube_id,
+                        title=result.get("title"),
+                        file_path=file_path,
+                    )
                 else:
                     logger.error(f"❌ Failed to download: {video_url}")
                     summary.failed_downloads += 1
@@ -237,6 +238,7 @@ class YouTubeDownloader:
             if self._mix_generator is None:
                 try:
                     self._mix_generator = DJQueryGenerator()
+                    pass
                 except Exception as exc:
                     logger.error("Unable to initialise DJ mix query generator: %s", exc)
                     raise RuntimeError(
