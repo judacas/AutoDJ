@@ -2,11 +2,261 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Premium CSS Foundation with Apple HIG Principles */
+
+:root {
+  /* Deep Space Color System */
+  --bg-primary: #0a0a0b;
+  --bg-secondary: #0f0f10;
+  --bg-tertiary: #1a1a1b;
+  --bg-glass: rgba(15, 15, 16, 0.85);
+  --bg-glass-strong: rgba(15, 15, 16, 0.95);
+
+  /* Text Colors - OS Native Feel */
+  --text-primary: #ffffff;
+  --text-secondary: #d4d4d8;
+  --text-tertiary: #a1a1aa;
+  --text-quaternary: #71717a;
+
+  /* Accent Colors */
+  --accent-green: #1db954;
+  --accent-green-hover: #1ed760;
+  --accent-glass: rgba(29, 185, 84, 0.1);
+
+  /* Border and Surface */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-active: rgba(255, 255, 255, 0.1);
+
+  /* Shadows */
+  --shadow-soft: 0 4px 32px rgba(0, 0, 0, 0.4);
+  --shadow-strong: 0 8px 64px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 32px rgba(29, 185, 84, 0.2);
+}
+
+/* Base Reset with Premium Typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family: 'Circular', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  /* Apple's System Font Stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #191414;
-  color: #ffffff;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+
+  /* Deep Space Background with Vignette */
+  background:
+    radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 70%),
+    linear-gradient(135deg, #0a0a0b 0%, #0f0f10 50%, #0a0a0b 100%);
+  background-attachment: fixed;
+  color: var(--text-secondary);
+
+  min-height: 100vh;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* Premium Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-32px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Premium Glass Morphism Effect */
+.glass-morphism {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-morphism-strong {
+  background: var(--bg-glass-strong);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--border-medium);
+}
+
+/* Premium Button Styles */
+.btn-primary {
+  background: var(--accent-green);
+  color: #000;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.25px;
+  padding: 12px 32px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: var(--accent-green-hover);
+  transform: scale(1.04);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 24px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-active);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
+}
+
+/* Premium Input Styles */
+.input-premium {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 16px 20px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.input-premium:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px var(--accent-glass);
+  background: var(--bg-glass-strong);
+}
+
+.input-premium::placeholder {
+  color: var(--text-quaternary);
+}
+
+/* Smooth Animations Class */
+.animate-entrance {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.animate-entrance-delay-1 {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both 0.1s;
+}
+
+.animate-entrance-delay-2 {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both 0.2s;
+}
+
+.animate-entrance-delay-3 {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both 0.3s;
+}
+
+/* Smooth Transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-quaternary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Selection Styling */
+::selection {
+  background: var(--accent-glass);
+  color: var(--text-primary);
 }

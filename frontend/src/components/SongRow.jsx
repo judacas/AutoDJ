@@ -1,14 +1,17 @@
-import React from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Heart, Pause, Play } from 'lucide-react';
+import { useState } from 'react';
 
-const SongRow = ({ 
-  song, 
-  index, 
-  isCurrentTrack, 
-  isPlaying, 
+const SongRow = ({
+  song,
+  index,
+  isCurrentTrack,
+  isPlaying,
   onTrackSelect,
-  onPlayPause 
+  onPlayPause
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+
   const formatDuration = (durationMs) => {
     const minutes = Math.floor(durationMs / 60000);
     const seconds = Math.floor((durationMs % 60000) / 1000);
@@ -32,82 +35,94 @@ const SongRow = ({
     }
   };
 
+  const handleLikeClick = (e) => {
+    e.stopPropagation();
+    setIsLiked(!isLiked);
+  };
+
   return (
-    <div 
-      className={`group grid grid-cols-[16px_1fr_1fr_1fr_minmax(120px,1fr)] gap-4 px-4 py-2 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-200 ${
-        isCurrentTrack ? 'bg-white/10' : ''
-      }`}
+    <div
+      className={`group grid grid-cols-[auto_1fr_1fr_auto_auto] gap-4 px-6 py-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-white/5 ${isCurrentTrack ? 'bg-white/5' : ''
+        }`}
       onClick={handleRowClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Track number / Play button */}
-      <div className="flex items-center justify-center text-spotify-light group-hover:text-white">
+      {/* Track Number / Play Button */}
+      <div className="flex items-center justify-center w-8 text-zinc-400 group-hover:text-white">
         {isCurrentTrack && isPlaying ? (
-          <button 
+          <button
             onClick={handlePlayButtonClick}
             className="w-4 h-4 flex items-center justify-center hover:scale-110 transition-transform"
           >
-            <Pause className="w-4 h-4 text-spotify-green" />
+            <Pause className="w-4 h-4 text-green-500" />
+          </button>
+        ) : isHovered || isCurrentTrack ? (
+          <button
+            onClick={handlePlayButtonClick}
+            className="w-4 h-4 flex items-center justify-center hover:scale-110 transition-transform"
+          >
+            <Play className="w-4 h-4 text-white" />
           </button>
         ) : (
-          <>
-            <span className={`text-sm group-hover:hidden ${isCurrentTrack ? 'text-spotify-green' : ''}`}>
-              {(index + 1).toString().padStart(2, '0')}
-            </span>
-            <button 
-              onClick={handlePlayButtonClick}
-              className="hidden group-hover:flex w-4 h-4 items-center justify-center hover:scale-110 transition-transform"
-            >
-              <Play className="w-4 h-4" />
-            </button>
-          </>
+          <span className={`text-sm font-medium ${isCurrentTrack ? 'text-green-500' : 'text-zinc-400'}`}>
+            {(index + 1).toString().padStart(2, '0')}
+          </span>
         )}
       </div>
 
-      {/* Album cover, title & artist */}
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="relative flex-shrink-0">
-          <img 
-            src={song.album?.images?.[2]?.url || song.album?.images?.[0]?.url || '/api/placeholder/40/40'} 
+      {/* Album Cover, Title & Artist */}
+      <div className="flex items-center gap-4 min-w-0">
+        <div className="relative flex-shrink-0 group/image">
+          <img
+            src={song.album?.images?.[2]?.url || song.album?.images?.[0]?.url || '/api/placeholder/48/48'}
             alt={song.album?.name || 'Album cover'}
-            className="w-10 h-10 rounded object-cover"
+            className="w-12 h-12 rounded-lg object-cover shadow-md group-hover/image:shadow-lg transition-shadow duration-200"
             onError={(e) => {
-              e.target.src = '/api/placeholder/40/40';
+              e.target.src = '/api/placeholder/48/48';
             }}
           />
           {isCurrentTrack && (
-            <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center">
-              <div className="w-3 h-3 bg-spotify-green rounded-full animate-pulse" />
+            <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
             </div>
           )}
         </div>
-        
+
         <div className="min-w-0 flex-1">
-          <div className={`font-medium truncate ${isCurrentTrack ? 'text-spotify-green' : 'text-white'}`}>
+          <div className={`font-semibold truncate text-base transition-colors ${isCurrentTrack ? 'text-green-400' : 'text-white group-hover:text-green-400'
+            }`}>
             {song.name}
           </div>
-          <div className="text-sm text-spotify-light truncate">
+          <div className="text-sm text-zinc-400 truncate hover:text-zinc-300 transition-colors cursor-pointer">
             {song.artists?.map(artist => artist.name).join(', ') || 'Unknown Artist'}
           </div>
         </div>
       </div>
 
-      {/* Album name */}
-      <div className="flex items-center min-w-0">
-        <span className="text-sm text-spotify-light truncate hover:text-white cursor-pointer">
+      {/* Album Name */}
+      <div className="hidden md:flex items-center min-w-0">
+        <span className="text-sm text-zinc-400 truncate hover:text-white hover:underline cursor-pointer transition-colors">
           {song.album?.name || 'Unknown Album'}
         </span>
       </div>
 
-      {/* Date added (mock for now) */}
-      <div className="hidden md:flex items-center">
-        <span className="text-sm text-spotify-light">
-          {song.added_at ? new Date(song.added_at).toLocaleDateString() : '2 days ago'}
-        </span>
+      {/* Date Added */}
+      <div className="hidden md:flex items-center justify-center w-8">
+        <button
+          onClick={handleLikeClick}
+          className={`p-1 rounded-full transition-all duration-200 hover:scale-110 ${isLiked
+              ? 'text-green-500 hover:text-green-400'
+              : 'text-zinc-500 hover:text-zinc-300 opacity-0 group-hover:opacity-100'
+            }`}
+        >
+          <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+        </button>
       </div>
 
       {/* Duration */}
-      <div className="flex items-center justify-end">
-        <span className="text-sm text-spotify-light">
+      <div className="flex items-center justify-end w-12">
+        <span className="text-sm text-zinc-400 font-medium">
           {formatDuration(song.duration_ms || 0)}
         </span>
       </div>

@@ -1,107 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import PlayerControls from './components/PlayerControls';
 import PlaylistInput from './components/PlaylistInput';
 import SongList from './components/SongList';
-import PlayerControls from './components/PlayerControls';
-
-// Mock API function - replace with actual backend integration
-const mockFetchPlaylist = async (playlistUrl) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Mock playlist data
-  return {
-    playlist: {
-      id: '37i9dQZEVXbMDoHDwVN2tF',
-      name: 'Global Top 50',
-      description: 'Your daily update of the most played tracks right now - Global.',
-      images: [
-        { url: 'https://i.scdn.co/image/ab67706f000000023dadf31c2e4bca63f5b9ba8a' }
-      ],
-      owner: {
-        display_name: 'Spotify'
-      }
-    },
-    tracks: {
-      items: [
-        {
-          track: {
-            id: '1',
-            name: 'Anti-Hero',
-            artists: [{ name: 'Taylor Swift' }],
-            album: {
-              name: 'Midnights',
-              images: [
-                { url: 'https://i.scdn.co/image/ab67616d0000b273bb54dde68cd23e2a268ae0f5' }
-              ]
-            },
-            duration_ms: 200000,
-            preview_url: null
-          }
-        },
-        {
-          track: {
-            id: '2',
-            name: 'As It Was',
-            artists: [{ name: 'Harry Styles' }],
-            album: {
-              name: 'Harry\'s House',
-              images: [
-                { url: 'https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14' }
-              ]
-            },
-            duration_ms: 167000,
-            preview_url: null
-          }
-        },
-        {
-          track: {
-            id: '3',
-            name: 'Bad Habit',
-            artists: [{ name: 'Steve Lacy' }],
-            album: {
-              name: 'Gemini Rights',
-              images: [
-                { url: 'https://i.scdn.co/image/ab67616d0000b273b85259a5d7dcdb64c2f98e09' }
-              ]
-            },
-            duration_ms: 223000,
-            preview_url: null
-          }
-        },
-        {
-          track: {
-            id: '4',
-            name: 'Unholy',
-            artists: [{ name: 'Sam Smith' }, { name: 'Kim Petras' }],
-            album: {
-              name: 'Unholy',
-              images: [
-                { url: 'https://i.scdn.co/image/ab67616d0000b2732b2b82f7b6a3b5b2f4b4b6a3' }
-              ]
-            },
-            duration_ms: 156000,
-            preview_url: null
-          }
-        },
-        {
-          track: {
-            id: '5',
-            name: 'Flowers',
-            artists: [{ name: 'Miley Cyrus' }],
-            album: {
-              name: 'Endless Summer Vacation',
-              images: [
-                { url: 'https://i.scdn.co/image/ab67616d0000b273f4b5e7e5e1c2f2e5e1e5e1e5' }
-              ]
-            },
-            duration_ms: 200000,
-            preview_url: null
-          }
-        }
-      ]
-    }
-  };
-};
+import { APIError, APIService } from './services/api';
 
 function App() {
   // Playlist and songs state
@@ -124,20 +25,40 @@ function App() {
   const handlePlaylistSubmit = async (playlistUrl) => {
     setIsLoading(true);
     setError('');
-    
+
     try {
-      const data = await mockFetchPlaylist(playlistUrl);
+      // First check if backend is reachable
+      const isHealthy = await APIService.checkHealth();
+      if (!isHealthy) {
+        throw new APIError('Backend server is not running. Please start the server first.', 0);
+      }
+
+      // Fetch playlist data from the real backend
+      const data = await APIService.fetchPlaylistTracks(playlistUrl);
       setPlaylist(data.playlist);
       setSongs(data.tracks.items);
-      
+
       // Reset player state
       setCurrentTrack(null);
       setCurrentTrackIndex(0);
       setIsPlaying(false);
       setCurrentTime(0);
     } catch (err) {
-      setError('Failed to load playlist. Please try again.');
       console.error('Error fetching playlist:', err);
+
+      if (err instanceof APIError) {
+        if (err.status === 0) {
+          setError('Cannot connect to backend server. Please make sure it is running on http://127.0.0.1:8001');
+        } else if (err.status === 404) {
+          setError('Playlist not found. Please check the URL and try again.');
+        } else if (err.status === 400) {
+          setError('Invalid playlist URL. Please enter a valid Spotify playlist link.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -160,14 +81,14 @@ function App() {
   // Handle previous track
   const handlePrevious = useCallback(() => {
     if (songs.length === 0) return;
-    
+
     let newIndex;
     if (isShuffle) {
       newIndex = Math.floor(Math.random() * songs.length);
     } else {
       newIndex = currentTrackIndex > 0 ? currentTrackIndex - 1 : songs.length - 1;
     }
-    
+
     const newTrack = songs[newIndex]?.track || songs[newIndex];
     handleTrackSelect(newTrack, newIndex);
   }, [songs, currentTrackIndex, isShuffle, handleTrackSelect]);
@@ -175,14 +96,14 @@ function App() {
   // Handle next track
   const handleNext = useCallback(() => {
     if (songs.length === 0) return;
-    
+
     let newIndex;
     if (isShuffle) {
       newIndex = Math.floor(Math.random() * songs.length);
     } else {
       newIndex = currentTrackIndex < songs.length - 1 ? currentTrackIndex + 1 : 0;
     }
-    
+
     const newTrack = songs[newIndex]?.track || songs[newIndex];
     handleTrackSelect(newTrack, newIndex);
   }, [songs, currentTrackIndex, isShuffle, handleTrackSelect]);
@@ -190,13 +111,11 @@ function App() {
   // Handle seek
   const handleSeek = useCallback((time) => {
     setCurrentTime(time);
-    // In a real app, you would seek the audio player here
   }, []);
 
   // Handle volume change
   const handleVolumeChange = useCallback((newVolume) => {
     setVolume(newVolume);
-    // In a real app, you would update the audio player volume here
   }, []);
 
   // Handle shuffle toggle
@@ -215,12 +134,12 @@ function App() {
   // Mock time progress (in real app this would be handled by audio player)
   useEffect(() => {
     let interval;
-    
+
     if (isPlaying && currentTrack && duration > 0) {
       interval = setInterval(() => {
         setCurrentTime(prev => {
           const newTime = prev + 1000;
-          
+
           // Auto advance to next track when current track ends
           if (newTime >= duration) {
             if (repeatMode === 'one') {
@@ -230,7 +149,7 @@ function App() {
               return 0;
             }
           }
-          
+
           return newTime;
         });
       }, 1000);
@@ -244,85 +163,112 @@ function App() {
   }, [isPlaying, currentTrack, duration, repeatMode, handleNext]);
 
   return (
-    <div className="min-h-screen bg-spotify-dark text-white">
-      <div className="pb-24"> {/* Add padding bottom for player controls */}
-        
-        {/* Show playlist input if no playlist loaded */}
-        {!playlist && (
-          <div className="min-h-screen flex items-center justify-center">
-            <PlaylistInput 
-              onPlaylistSubmit={handlePlaylistSubmit}
-              isLoading={isLoading}
-            />
-          </div>
-        )}
+    <div className="min-h-screen text-white relative overflow-hidden">
+      {/* Premium Background Layer */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-zinc-900 via-black to-zinc-900" />
 
-        {/* Show error if any */}
-        {error && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-            {error}
-          </div>
-        )}
-
-        {/* Show loading state */}
-        {isLoading && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-spotify-gray p-6 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-2 border-spotify-green border-t-transparent" />
-                <span>Loading playlist...</span>
+      {/* Main Content Container */}
+      <div className="relative z-10">
+        <main className="pb-32">
+          {/* Show playlist input if no playlist loaded */}
+          {!playlist && (
+            <div className="min-h-screen flex items-center justify-center px-6">
+              <div className="w-full max-w-2xl animate-entrance">
+                <PlaylistInput
+                  onPlaylistSubmit={handlePlaylistSubmit}
+                  isLoading={isLoading}
+                />
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Show playlist and songs */}
-        {playlist && songs.length > 0 && (
-          <>
-            {/* Add a button to load a new playlist */}
-            <div className="fixed top-4 right-4 z-40">
-              <button
-                onClick={() => {
-                  setPlaylist(null);
-                  setSongs([]);
-                  setCurrentTrack(null);
-                  setIsPlaying(false);
-                }}
-                className="bg-spotify-gray hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors"
-              >
-                Load New Playlist
-              </button>
+          {/* Show error if any */}
+          {error && (
+            <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 animate-entrance">
+              <div className="glass-morphism-strong px-6 py-4 rounded-2xl shadow-strong border border-red-500/20 max-w-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="text-red-200 font-medium">{error}</span>
+                </div>
+              </div>
             </div>
+          )}
 
-            <SongList
-              playlist={playlist}
-              songs={songs}
-              currentTrack={currentTrack}
-              isPlaying={isPlaying}
-              onTrackSelect={handleTrackSelect}
-              onPlayPause={handlePlayPause}
-            />
-          </>
-        )}
+          {/* Show loading state */}
+          {isLoading && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="glass-morphism-strong p-8 rounded-3xl shadow-strong animate-scaleIn">
+                <div className="flex flex-col items-center gap-6">
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-zinc-700 border-t-green-500 rounded-full animate-spin" />
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-green-500/30 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-xl font-semibold text-white mb-2">Loading playlist...</h3>
+                    <p className="text-zinc-400">Fetching your music</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Show playlist and songs */}
+          {playlist && songs.length > 0 && (
+            <div className="animate-entrance">
+              {/* Premium Load New Playlist Button */}
+              <div className="fixed top-6 right-6 z-40 animate-entrance-delay-1">
+                <button
+                  onClick={() => {
+                    setPlaylist(null);
+                    setSongs([]);
+                    setCurrentTrack(null);
+                    setIsPlaying(false);
+                  }}
+                  className="glass-morphism px-6 py-3 rounded-2xl text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 hover:shadow-glow hover:scale-105 group"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Load New Playlist
+                  </div>
+                </button>
+              </div>
+
+              <div className="animate-entrance-delay-2">
+                <SongList
+                  playlist={playlist}
+                  songs={songs}
+                  currentTrack={currentTrack}
+                  isPlaying={isPlaying}
+                  onTrackSelect={handleTrackSelect}
+                  onPlayPause={handlePlayPause}
+                />
+              </div>
+            </div>
+          )}
+        </main>
+
+        {/* Premium Player Controls - Always at bottom */}
+        <div className="animate-entrance-delay-3">
+          <PlayerControls
+            currentTrack={currentTrack}
+            isPlaying={isPlaying}
+            currentTime={currentTime}
+            duration={duration}
+            volume={volume}
+            isShuffle={isShuffle}
+            repeatMode={repeatMode}
+            onPlayPause={handlePlayPause}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            onSeek={handleSeek}
+            onVolumeChange={handleVolumeChange}
+            onToggleShuffle={handleToggleShuffle}
+            onToggleRepeat={handleToggleRepeat}
+          />
+        </div>
       </div>
-
-      {/* Player Controls (always at bottom) */}
-      <PlayerControls
-        currentTrack={currentTrack}
-        isPlaying={isPlaying}
-        currentTime={currentTime}
-        duration={duration}
-        volume={volume}
-        isShuffle={isShuffle}
-        repeatMode={repeatMode}
-        onPlayPause={handlePlayPause}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-        onSeek={handleSeek}
-        onVolumeChange={handleVolumeChange}
-        onToggleShuffle={handleToggleShuffle}
-        onToggleRepeat={handleToggleRepeat}
-      />
     </div>
   );
 }
