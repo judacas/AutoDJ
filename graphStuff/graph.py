@@ -6,7 +6,8 @@
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import time
-import graphAlgo
+from graphAlgo import beam_search
+from graphAlgo import songs_to_edges
 from XTpair import XT_PAIR
 from XTYpair import XTY_PAIR
 from XTYmaker import find_xty_pairs_from_mix_groups
@@ -57,6 +58,13 @@ class DirectedSongGraph:
 
     def get_decent_path(self) -> List[str]:
         return graphAlgo.beam_search(self, k=5)
+
+    def get_ATB_pairs(self) -> List[XTY_PAIR]:
+        edges = songs_to_edges(self)
+        pairs = []
+        for edge in edges:
+            pairs.append(edge.xty)
+        return pairs
 
     def make_edges(self, XTpairs: [XT_PAIR], crossfade_length: float = 5):
         XTYpairs = find_xty_pairs_from_mix_groups(XTpairs)
