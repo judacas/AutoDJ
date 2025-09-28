@@ -185,7 +185,9 @@ class AudioRecognizer:
         return start_time, end_time
 
     def recognize_song_in_mix(self, song_path: str, mix_path: str) -> dict:
-        """Recognize a song within a mix."""
+        """
+        Recognize a song within a mix with fine-tuning based on highest confidence chunk.
+        """
         fingerprinter = AudioFingerprinter(self.config)
 
         # Create fingerprints
@@ -197,7 +199,7 @@ class AudioRecognizer:
         mix_chroma, mix_sr = fingerprinter.create_fingerprint(mix_path)
         self.logger.info(f"Fingerprints created for {song_path} and {mix_path}")
 
-        if song_chroma is None or mix_chroma is None:
+        if song_chroma is None or mix_chroma is None or mix_sr is None:
             return {"success": False, "error": "Failed to create fingerprints"}
 
         # Find rough match
@@ -206,16 +208,48 @@ class AudioRecognizer:
         if rough_start is None or rough_end is None:
             return {"success": False, "error": "No match found"}
 
+        # Generate aligned confidences to find the best reference chunk
+        self.logger.info("Generating aligned confidences for fine-tuning...")
+        (time_points, certainty_scores, reference_chunk) = (
+            self.generate_alignedConfidences(
+                song_chroma=song_chroma,
+                mix_chroma=mix_chroma,
+                sr=mix_sr,
+                song_start_time=0.0,
+                mix_start_time=rough_start,
+                song_end_time=rough_end - rough_start,
+                mix_end_time=rough_end,
+            )
+        )
+
+        # Fine-tune alignment using the reference chunk
+        refined_start, refined_end = self.fine_tune_alignment(
+            song_chroma=song_chroma,
+            mix_chroma=mix_chroma,
+            sr=mix_sr,
+            rough_start_time=rough_start,
+            rough_end_time=rough_end,
+            reference_chunk=reference_chunk,
+        )
+
         return {
             "success": True,
             "song_path": song_path,
             "mix_path": mix_path,
             "rough_match": {"start": rough_start, "end": rough_end},
+            "fine_tuned_match": {"start": refined_start, "end": refined_end},
+            "reference_chunk": reference_chunk,
+            "confidence_analysis": {
+                "time_points": time_points,
+                "certainty_scores": certainty_scores,
+                "max_certainty": max(certainty_scores) if certainty_scores else 0,
+                "avg_certainty": np.mean(certainty_scores) if certainty_scores else 0,
+            },
             "precise_match": {
                 "song_start": 0.0,
-                "song_end": rough_end - rough_start,
-                "mix_start": rough_start,
-                "mix_end": rough_end,
+                "song_end": refined_end - refined_start,
+                "mix_start": refined_start,
+                "mix_end": refined_end,
             },
         }
 
@@ -249,7 +283,7 @@ class AudioRecognizer:
 
         # Save the graph to a file and open it immediately
         plt.savefig("certainty_graph.png", dpi=300, bbox_inches="tight")
-        print(f"Graph saved as 'certainty_graph.png'")
+        print("Graph saved as 'certainty_graph.png'")
 
         self.logger.info(f"Graph generated with {len(time_points)} data points")
         self.logger.info(
@@ -268,7 +302,7 @@ class AudioRecognizer:
         mix_end_time: float,
         n_chunks: int = 20,
         overlap_percentage: float = 0.9,
-    ) -> Tuple[list[float], list[float]]:
+    ) -> Tuple[list[float], list[float], dict]:
         """
         Generate a graph showing certainty metric over time for aligned audio segments.
 
@@ -336,6 +370,9 @@ class AudioRecognizer:
         print(f"Overlap frames: {overlap_frames}")
         print(f"Step frames: {step_frames}")
 
+        # Store chunk information for fine-tuning analysis
+        chunk_info = []
+
         # Slide through the segments with overlapping chunks
         current_frame = 0
         chunk_count = 0
@@ -358,17 +395,34 @@ class AudioRecognizer:
             )
 
             print(
-                f"Chunk {chunk_count}: aligned_time={aligned_time:.2f}s, certainty={certainty:.2f}"
+                f"Chunk {chunk_count}: aligned_time={aligned_time:.2f}s, "
+                f"certainty={certainty:.2f}"
             )
 
             time_points.append(aligned_time)
             certainty_scores.append(certainty)
 
+            # Store chunk info for fine-tuning
+            chunk_info.append(
+                {
+                    "chunk_id": chunk_count,
+                    "aligned_time": aligned_time,
+                    "certainty": certainty,
+                    "song_start_frame": current_frame + song_start_frame,
+                    "mix_start_frame": current_frame + mix_start_frame,
+                    "chunk_frames": chunk_frames,
+                }
+            )
+
             current_frame += step_frames
             chunk_count += 1
+
+        # Find the highest confidence chunk for reference alignment
+        reference_chunk = self._find_reference_chunk(chunk_info)
+
         self.generate_certainty_graph(time_points, certainty_scores)
 
-        return time_points, certainty_scores
+        return time_points, certainty_scores, reference_chunk
 
     def _calculate_chunk_certainty(
         self, song_chunk: np.ndarray, mix_chunk: np.ndarray
@@ -396,6 +450,92 @@ class AudioRecognizer:
 
         # Return the maximum correlation value as certainty
         return float(best_match_score)
+
+    def _find_reference_chunk(self, chunk_info: list[dict]) -> dict:
+        """
+        Find the chunk with the highest certainty score to use as reference.
+
+        Args:
+            chunk_info: List of chunk information dictionaries
+
+        Returns:
+            Dictionary containing reference chunk information
+        """
+        if not chunk_info:
+            return {}
+
+        # Find chunk with highest certainty
+        reference_chunk = max(chunk_info, key=lambda x: x["certainty"])
+
+        self.logger.info(
+            f"Reference chunk found: ID {reference_chunk['chunk_id']} "
+            f"at time {reference_chunk['aligned_time']:.2f}s "
+            f"with certainty {reference_chunk['certainty']:.2f}"
+        )
+
+        return reference_chunk
+
+    def fine_tune_alignment(
+        self,
+        song_chroma: np.ndarray,
+        mix_chroma: np.ndarray,
+        sr: int,
+        rough_start_time: float,
+        rough_end_time: float,
+        reference_chunk: dict,
+    ) -> Tuple[float, float]:
+        """
+        Fine-tune alignment using the highest confidence chunk as reference.
+
+        Args:
+            song_chroma: Source song chroma features
+            mix_chroma: Mix chroma features
+            sr: Sample rate
+            rough_start_time: Initial rough estimate start time
+            rough_end_time: Initial rough estimate end time
+            reference_chunk: Reference chunk with highest confidence
+
+        Returns:
+            Tuple of (refined_start_time, refined_end_time)
+        """
+        print(reference_chunk)
+        if not reference_chunk:
+            self.logger.warning(
+                "No reference chunk provided, returning rough estimates"
+            )
+            return rough_start_time, rough_end_time
+
+        self.logger.info("Fine-tuning alignment using reference chunk...")
+
+        # Extract chunk parameters
+        chunk_frames = reference_chunk["chunk_frames"]
+        song_chunk_start_frame = reference_chunk["song_start_frame"]
+        mix_chunk_start_frame = reference_chunk["mix_start_frame"]
+
+        # Center a window of 3 chunks in the mix around the reference chunk
+        mix_window_start = max(0, mix_chunk_start_frame - chunk_frames)
+        mix_window_end = min(
+            mix_chroma.shape[1], mix_chunk_start_frame + chunk_frames * 2
+        )
+
+        # Extract the song chunk and mix window
+        song_chunk = song_chroma[
+            :, song_chunk_start_frame : song_chunk_start_frame + chunk_frames
+        ]
+        mix_window = mix_chroma[:, mix_window_start:mix_window_end]
+
+        # Use find_rough_match with the chunk and window
+        chunkOffsetStart, chunkOffsetEnd = self.find_rough_match(
+            song_chunk, mix_window, sr
+        )
+        print(librosa.frames_to_time(chunk_frames, sr=sr))
+        chunkOffsetStart -= librosa.frames_to_time(chunk_frames, sr=sr)
+        chunkOffsetEnd -= librosa.frames_to_time(chunk_frames, sr=sr)
+        print(chunkOffsetStart, chunkOffsetEnd)
+        refined_start_time = chunkOffsetStart + mix_chunk_start_frame
+        refined_end_time = chunkOffsetEnd + mix_chunk_start_frame
+
+        return rough_start_time, rough_end_time
 
 
 def main():
@@ -435,30 +575,31 @@ def main():
                 f"{precise['mix_end']:.2f}s"
             )
 
-            # Generate certainty graph
-            print("\n--- Generating Certainty Graph ---")
+        # Show fine-tuned results if available
+        if "fine_tuned_match" in result:
+            fine_tuned = result["fine_tuned_match"]
+            print(
+                f"Fine-tuned match: {fine_tuned['start']:.2f}s to {fine_tuned['end']:.2f}s"
+            )
 
-            # Create fingerprints for graph generation
-            fingerprinter = AudioFingerprinter(config)
-            song_chroma, _ = fingerprinter.create_fingerprint(SOURCE_SONG_PATH)
-            mix_chroma, mix_sr = fingerprinter.create_fingerprint(MIX_PATH)
+        # Show reference chunk information
+        if "reference_chunk" in result and result["reference_chunk"]:
+            ref = result["reference_chunk"]
+            print(
+                f"Reference chunk: ID {ref['chunk_id']} at {ref['aligned_time']:.2f}s "
+                + f"with certainty {ref['certainty']:.2f}"
+            )
 
-            if (
-                song_chroma is not None
-                and mix_chroma is not None
-                and mix_sr is not None
-            ):
-                pipeline.generate_alignedConfidences(
-                    song_chroma=song_chroma,
-                    mix_chroma=mix_chroma,
-                    sr=mix_sr,
-                    song_start_time=precise["song_start"],
-                    mix_start_time=precise["mix_start"],
-                    song_end_time=precise["song_end"],
-                    mix_end_time=precise["mix_end"],
-                )
-            else:
-                print("Failed to create fingerprints for graph generation")
+        # Show confidence analysis
+        if "confidence_analysis" in result:
+            analysis = result["confidence_analysis"]
+            print(
+                f"Confidence analysis: Max={analysis['max_certainty']:.2f}, "
+                + f"Avg={analysis['avg_certainty']:.2f}"
+            )
+
+        print("\n--- Certainty Graph Generated ---")
+        print("Graph saved as 'certainty_graph.png'")
     else:
         print(f"\nRecognition failed: {result.get('error', 'Unknown error')}")
 
