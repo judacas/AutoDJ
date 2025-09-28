@@ -7,6 +7,9 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import time
 import graphAlgo
+from XTpair import XT_PAIR
+from XTYpair import XTY_PAIR
+from XTYmaker import find_xty_pairs_from_mix_groups
 
 @dataclass
 class SongNode:
@@ -17,11 +20,10 @@ class SongNode:
 class TransitionEdge:
     source: str  # song_id
     target: str  # song_id
-    duration: time
-    sourceEnd : time
-    targetStart : time
+    sourceEnd : float
+    targetStart : float
     mix_id: str
-    confidence: float
+    xty: XTY_PAIR
     extra: dict = field(default_factory=dict)
 
 class DirectedSongGraph:
@@ -33,8 +35,8 @@ class DirectedSongGraph:
         if song_id not in self.nodes:
             self.nodes[song_id] = SongNode(song_id, metadata or {})
 
-    def add_transition(self, source: str, target: str, duration: time, sourceEnd: time, targetStart: time, mix_id: str, confidence: float, extra: Optional[dict] = None):
-        edge = TransitionEdge(source, target, duration, sourceEnd, targetStart, mix_id, confidence, extra or {})
+    def add_transition(self, source: str, target: str, sourceEnd: float, targetStart: float, mix_id: str, xty: XTY_PAIR, extra: Optional[dict] = None):
+        edge = TransitionEdge(source, target, sourceEnd, targetStart, mix_id, xty, extra or {})
         if source not in self.edges:
             self.edges[source] = []
         self.edges[source].append(edge)
@@ -55,6 +57,20 @@ class DirectedSongGraph:
 
     def get_decent_path(self) -> List[str]:
         return graphAlgo.beam_search(self, k=5)
+
+    def make_edges(self, XTpairs: [XT_PAIR], crossfade_length: float = 5):
+        XTYpairs = find_xty_pairs_from_mix_groups(XTpairs)
+        for pair in XTYpairs:
+            self.add_transition(
+                source=pair.X_song_path,
+                target=pair.Y_song_path,
+                sourceEnd=time(minute=pair.Xcross_out + crossfade_length),
+                targetStart=time(minute=pair.Ycross_in),
+                mix_id=pair.mix_song_path,
+                xty=pair,
+                extra={}
+            )
+
 
 
 # Example usage (to be removed or adapted when connecting to DB):

@@ -1,6 +1,7 @@
 # Brute force and beam search algos
 
 from graph import DirectedSongGraph, SongNode
+from typing import Callable, List, Optional
 
 def bf(graph: DirectedSongGraph):
 	return beam_search(graph, k=9999)
@@ -41,7 +42,16 @@ def beam_search(graph, k):
 			beam = [(p, v) for (p, v, h) in new_beam[:k]]
 	return songs_to_edges(graph, best_path)
 
-def songs_to_edges(graph: DirectedSongGraph, song_path: List[str]) -> List[TransitionEdge]:
+def songs_to_edges(
+	graph: DirectedSongGraph,
+	song_path: List[str],
+	edge_selector: Optional[Callable[[List], Optional[object]]] = None
+) -> List[object]:
+	"""
+	Given a path of song_ids, select edges between each pair using edge_selector.
+	edge_selector: function that takes a list of candidate edges and returns the chosen edge.
+	If not provided, defaults to maximizing previous song's play time (sourceEnd).
+	"""
 	edges = []
 	prev_target_start = None
 	for i in range(len(song_path) - 1):
@@ -56,8 +66,15 @@ def songs_to_edges(graph: DirectedSongGraph, song_path: List[str]) -> List[Trans
 		if not out_edges:
 			raise ValueError(f"No valid non-overlapping edge found from {source} to {target}")
 
-		# Greedily pick the edge that maximizes the previous song's play time (sourceEnd)
-		edge = max(out_edges, key=lambda e: e.sourceEnd)
+		# Use custom edge selector if provided
+		if edge_selector is not None:
+			edge = edge_selector(out_edges)
+			if edge is None:
+				raise ValueError(f"Edge selector did not return an edge for {source} to {target}")
+		else:
+			# Default: maximize previous song's play time (sourceEnd)
+			edge = max(out_edges, key=lambda e: e.sourceEnd)
+
 		edges.append(edge)
 		prev_target_start = edge.targetStart
 
