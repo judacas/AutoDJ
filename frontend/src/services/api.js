@@ -1,4 +1,4 @@
-// API service for communicating with the AutoDJ backend
+// API service for communicating with the MixFlow backend
 const API_BASE_URL = 'http://127.0.0.1:8001';
 
 class APIError extends Error {

@@ -18,10 +18,10 @@ const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
         <div className="space-y-2">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none">
             <span className="bg-gradient-to-b from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-              Auto
+              Mix
             </span>
             <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
-              DJ
+              Flow
             </span>
           </h1>
         </div>
@@ -70,7 +70,7 @@ const PlaylistInput = ({ onPlaylistSubmit, loading }) => {
         {/* Help Text */}
         <div className="text-center space-y-3">
           <p className="text-base text-gray-400 leading-relaxed">
-            Paste a Spotify playlist link and let our AutoDJ create something extraordinary
+            Paste a Spotify playlist link and let our MixFlow create something extraordinary
           </p>
         </div>
       </div>
