@@ -209,7 +209,7 @@ _SessionLocal: Optional[sessionmaker] = None
 
 def _stable_id(prefix: str, parts: Iterable[Optional[str]]) -> str:
     concatenated = "::".join(part or "" for part in parts)
-    digest = hashlib.sha1(concatenated.encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(concatenated.encode("utf-8")).hexdigest()
     return f"{prefix}_{digest}"
 
 
