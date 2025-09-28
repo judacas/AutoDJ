@@ -19,6 +19,11 @@ def parse_args() -> argparse.Namespace:
         description="Fetch a Spotify playlist and download its tracks and mixes."
     )
     parser.add_argument(
+        "playlist_url",
+        nargs="?",
+        help="Spotify playlist URL or URI to process.",
+    )
+    parser.add_argument(
         "--mixes-per-track",
         type=int,
         default=10,
@@ -66,7 +71,7 @@ def main() -> None:
     print("🎧 AutoDJ Playlist Pipeline")
     print("=" * 50)
 
-    playlist_url = get_playlist_url()
+    playlist_url = args.playlist_url or get_playlist_url()
 
     try:
         result = pipeline.run(
