@@ -1,13 +1,46 @@
 # Getting Songs Scripts
 
-This folder contains scripts for fetching and working with Spotify playlist data.
+This folder contains scripts and a small FastAPI service for fetching and working with Spotify playlist data.
 
 ## Files
 
 - `models.py` - Pydantic models for Spotify data structures (Track, Artist, Album, Playlist)
 - `get_playlist_songs.py` - Script to fetch and display playlist songs using Pydantic models
 - `download_all_songs.py` - Script to download all songs from a playlist using YouTube via yt-dlp
+- `playlist_pipeline.py` - Orchestrates fetching playlists and optional downloads
+- `api.py` - FastAPI app exposing endpoints to fetch playlist tracks and run the pipeline
 - `config.py` - Configuration for Spotify API credentials
+
+## FastAPI API (how to run)
+
+You can run the API the same way you did from PowerShell. Two supported options:
+
+- Option A: run the script directly (what you used)
+
+  PowerShell (from the project root):
+  ```powershell
+  python MonolithDev\gettingSongs\api.py
+  ```
+
+- Option B: use Uvicorn module path (also works from the project root)
+
+  ```powershell
+  python -m uvicorn MonolithDev.gettingSongs.api:app --host 127.0.0.1 --port 8000 --reload
+  ```
+
+Once running, open the interactive docs:
+- Swagger UI: http://127.0.0.1:8000/docs
+- OpenAPI JSON: http://127.0.0.1:8000/openapi.json
+
+### Prerequisites for the API
+
+1. Create a `.env` file with your Spotify credentials (same keys used elsewhere):
+   - `SPOTIFY_CLIENT_ID`
+   - `SPOTIFY_CLIENT_SECRET`
+2. Install dependencies (from repo root):
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
 ## get_playlist_songs.py
 
@@ -15,18 +48,18 @@ A simple script that takes a Spotify playlist URI as an argument and prints out 
 
 ### Usage
 
-```bash
-python get_playlist_songs.py <playlist_uri>
+```powershell
+python MonolithDev\gettingSongs\get_playlist_songs.py <playlist_uri>
 ```
 
 ### Examples
 
-```bash
+```powershell
 # Using Spotify URI format
-python get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M
+python MonolithDev\gettingSongs\get_playlist_songs.py spotify:playlist:37i9dQZF1DXcBWIGoYBM5M
 
 # Using Spotify URL format
-python get_playlist_songs.py https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M
+python MonolithDev\gettingSongs\get_playlist_songs.py https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M
 ```
 
 ### Prerequisites
@@ -64,18 +97,18 @@ A script that downloads all songs from a Spotify playlist by searching YouTube a
 
 ### Usage
 
-```bash
-python download_all_songs.py <playlist_id>
+```powershell
+python MonolithDev\gettingSongs\download_all_songs.py <playlist_id>
 ```
 
 ### Examples
 
-```bash
+```powershell
 # Download all songs from a playlist
-python download_all_songs.py 5evvXuuNDgAHbPDmojLZgD
+python MonolithDev\gettingSongs\download_all_songs.py 5evvXuuNDgAHbPDmojLZgD
 
 # Download all songs from another playlist
-python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M
+python MonolithDev\gettingSongs\download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M
 ```
 
 ### Prerequisites

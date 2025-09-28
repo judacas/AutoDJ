@@ -8,9 +8,9 @@ from typing import Dict, List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from .get_playlist_songs import SpotifyPlaylistService
-from .playlist_pipeline import PlaylistPipeline
-from .youtube_utils import QueryType
+from get_playlist_songs import SpotifyPlaylistService
+from playlist_pipeline import PlaylistPipeline
+from youtube_utils import QueryType
 
 app = FastAPI(
     title="AutoDJ Playlist Service",
@@ -120,3 +120,25 @@ async def get_playlist_tracks(playlist_url: str) -> PlaylistTracksResponse:
         total_tracks=playlist.total,
         tracks=tracks,
     )
+
+
+if __name__ == "__main__":
+    # Allow running directly with: python MonolithDev\\gettingSongs\\api.py
+    # This will start a local Uvicorn server for the FastAPI app.
+    import os
+    import uvicorn
+
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", "8000"))
+    reload = os.getenv("RELOAD", "true").lower() in {"1", "true", "yes"}
+
+    # Use an import string to enable reload when possible. Prefer the full package
+    # path, but fall back to the local module name if the package isn't importable.
+    app_import: str
+    try:
+        __import__("MonolithDev.gettingSongs.api")
+        app_import = "MonolithDev.gettingSongs.api:app"
+    except Exception:
+        app_import = "api:app"
+
+    uvicorn.run(app_import if reload else app, host=host, port=port, reload=reload)

@@ -1,0 +1,388 @@
+{
+  "href": "https://api.spotify.com/v1/playlists/795EZTgLyu5P4n7Y75EO4G/tracks?offset=0&limit=100&additional_types=track",
+  "items": [
+    {
+      "track": {
+        "name": "Get You (feat. Kali Uchis)",
+        "id": "2uP6t2J5MEwhr9rDkAAzwh",
+        "artists": [
+          {
+            "name": "Daniel Caesar",
+            "id": "20wkVLutqVOYrc0kxFs7rA",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+            },
+            "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+            "type": "artist",
+            "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+          },
+          {
+            "name": "Kali Uchis",
+            "id": "1U1el3k54VvEUzo3ybLPlM",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1U1el3k54VvEUzo3ybLPlM"
+            },
+            "href": "https://api.spotify.com/v1/artists/1U1el3k54VvEUzo3ybLPlM",
+            "type": "artist",
+            "uri": "spotify:artist:1U1el3k54VvEUzo3ybLPlM"
+          }
+        ],
+        "album": {
+          "name": "Freudian",
+          "id": "4E1XUBMTpLO7GpBzUo65Jp",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Daniel Caesar",
+              "id": "20wkVLutqVOYrc0kxFs7rA",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+              },
+              "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+              "type": "artist",
+              "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/4E1XUBMTpLO7GpBzUo65Jp"
+          },
+          "href": "https://api.spotify.com/v1/albums/4E1XUBMTpLO7GpBzUo65Jp",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b27305ac3e026324594a31fad7fb",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e0205ac3e026324594a31fad7fb",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d0000485105ac3e026324594a31fad7fb",
+              "width": 64
+            }
+          ],
+          "release_date": "2017-08-25",
+          "release_date_precision": "day",
+          "total_tracks": 10,
+          "type": "album",
+          "uri": "spotify:album:4E1XUBMTpLO7GpBzUo65Jp"
+        },
+        "duration_ms": 278179,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "TCACR1690004"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/2uP6t2J5MEwhr9rDkAAzwh"
+        },
+        "href": "https://api.spotify.com/v1/tracks/2uP6t2J5MEwhr9rDkAAzwh",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 83,
+        "preview_url": null,
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:2uP6t2J5MEwhr9rDkAAzwh"
+      },
+      "added_at": "2025-09-27T14:02:17Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Pink + White",
+        "id": "3xKsf9qdS1CyvXSMEid6g8",
+        "artists": [
+          {
+            "name": "Frank Ocean",
+            "id": "2h93pZq0e7k5yf4dywlkpM",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/2h93pZq0e7k5yf4dywlkpM"
+            },
+            "href": "https://api.spotify.com/v1/artists/2h93pZq0e7k5yf4dywlkpM",
+            "type": "artist",
+            "uri": "spotify:artist:2h93pZq0e7k5yf4dywlkpM"
+          }
+        ],
+        "album": {
+          "name": "Blonde",
+          "id": "3mH6qwIy9crq0I9YQbOuDf",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "Frank Ocean",
+              "id": "2h93pZq0e7k5yf4dywlkpM",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/2h93pZq0e7k5yf4dywlkpM"
+              },
+              "href": "https://api.spotify.com/v1/artists/2h93pZq0e7k5yf4dywlkpM",
+              "type": "artist",
+              "uri": "spotify:artist:2h93pZq0e7k5yf4dywlkpM"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/3mH6qwIy9crq0I9YQbOuDf"
+          },
+          "href": "https://api.spotify.com/v1/albums/3mH6qwIy9crq0I9YQbOuDf",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b273c5649add07ed3720be9d5526",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e02c5649add07ed3720be9d5526",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d00004851c5649add07ed3720be9d5526",
+              "width": 64
+            }
+          ],
+          "release_date": "2016-08-20",
+          "release_date_precision": "day",
+          "total_tracks": 17,
+          "type": "album",
+          "uri": "spotify:album:3mH6qwIy9crq0I9YQbOuDf"
+        },
+        "duration_ms": 184516,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "QZ5C81600003"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3xKsf9qdS1CyvXSMEid6g8"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3xKsf9qdS1CyvXSMEid6g8",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 86,
+        "preview_url": null,
+        "track_number": 3,
+        "type": "track",
+        "uri": "spotify:track:3xKsf9qdS1CyvXSMEid6g8"
+      },
+      "added_at": "2025-09-27T14:03:07Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Japanese Denim",
+        "id": "7IVukH71OXfAu3KudrrizN",
+        "artists": [
+          {
+            "name": "Daniel Caesar",
+            "id": "20wkVLutqVOYrc0kxFs7rA",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+            },
+            "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+            "type": "artist",
+            "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+          }
+        ],
+        "album": {
+          "name": "Get You - Single",
+          "id": "5QHoG6laR98M4SZumgSLkB",
+          "album_type": "single",
+          "artists": [
+            {
+              "name": "Daniel Caesar",
+              "id": "20wkVLutqVOYrc0kxFs7rA",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/20wkVLutqVOYrc0kxFs7rA"
+              },
+              "href": "https://api.spotify.com/v1/artists/20wkVLutqVOYrc0kxFs7rA",
+              "type": "artist",
+              "uri": "spotify:artist:20wkVLutqVOYrc0kxFs7rA"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/5QHoG6laR98M4SZumgSLkB"
+          },
+          "href": "https://api.spotify.com/v1/albums/5QHoG6laR98M4SZumgSLkB",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b273767b0cb17b7b6b4b3edcdb1a",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e02767b0cb17b7b6b4b3edcdb1a",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d00004851767b0cb17b7b6b4b3edcdb1a",
+              "width": 64
+            }
+          ],
+          "release_date": "2016-10-21",
+          "release_date_precision": "day",
+          "total_tracks": 2,
+          "type": "album",
+          "uri": "spotify:album:5QHoG6laR98M4SZumgSLkB"
+        },
+        "duration_ms": 270556,
+        "explicit": true,
+        "external_ids": {
+          "isrc": "TCACR1690007"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/7IVukH71OXfAu3KudrrizN"
+        },
+        "href": "https://api.spotify.com/v1/tracks/7IVukH71OXfAu3KudrrizN",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 79,
+        "preview_url": null,
+        "track_number": 2,
+        "type": "track",
+        "uri": "spotify:track:7IVukH71OXfAu3KudrrizN"
+      },
+      "added_at": "2025-09-27T22:36:31Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    },
+    {
+      "track": {
+        "name": "Like I Want You",
+        "id": "6qBFSepqLCuh5tehehc1bd",
+        "artists": [
+          {
+            "name": "GIVĒON",
+            "id": "4fxd5Ee7UefO4CUXgwJ7IP",
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/4fxd5Ee7UefO4CUXgwJ7IP"
+            },
+            "href": "https://api.spotify.com/v1/artists/4fxd5Ee7UefO4CUXgwJ7IP",
+            "type": "artist",
+            "uri": "spotify:artist:4fxd5Ee7UefO4CUXgwJ7IP"
+          }
+        ],
+        "album": {
+          "name": "TAKE TIME",
+          "id": "1zHR48K6XtWYm6bhrw4J6C",
+          "album_type": "album",
+          "artists": [
+            {
+              "name": "GIVĒON",
+              "id": "4fxd5Ee7UefO4CUXgwJ7IP",
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/4fxd5Ee7UefO4CUXgwJ7IP"
+              },
+              "href": "https://api.spotify.com/v1/artists/4fxd5Ee7UefO4CUXgwJ7IP",
+              "type": "artist",
+              "uri": "spotify:artist:4fxd5Ee7UefO4CUXgwJ7IP"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/1zHR48K6XtWYm6bhrw4J6C"
+          },
+          "href": "https://api.spotify.com/v1/albums/1zHR48K6XtWYm6bhrw4J6C",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b2733317fc12f8b9a9a0b8459766",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e023317fc12f8b9a9a0b8459766",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d000048513317fc12f8b9a9a0b8459766",
+              "width": 64
+            }
+          ],
+          "release_date": "2020-03-27",
+          "release_date_precision": "day",
+          "total_tracks": 8,
+          "type": "album",
+          "uri": "spotify:album:1zHR48K6XtWYm6bhrw4J6C"
+        },
+        "duration_ms": 260776,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USSM11914370"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/6qBFSepqLCuh5tehehc1bd"
+        },
+        "href": "https://api.spotify.com/v1/tracks/6qBFSepqLCuh5tehehc1bd",
+        "is_local": false,
+        "is_playable": null,
+        "popularity": 78,
+        "preview_url": null,
+        "track_number": 7,
+        "type": "track",
+        "uri": "spotify:track:6qBFSepqLCuh5tehehc1bd"
+      },
+      "added_at": "2025-09-27T22:36:35Z",
+      "added_by": {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/73mev364j7sfe5dip48pkyide"
+        },
+        "href": "https://api.spotify.com/v1/users/73mev364j7sfe5dip48pkyide",
+        "id": "73mev364j7sfe5dip48pkyide",
+        "type": "user",
+        "uri": "spotify:user:73mev364j7sfe5dip48pkyide"
+      },
+      "is_local": false,
+      "primary_color": null,
+      "video_thumbnail": {
+        "url": null
+      }
+    }
+  ],
+  "limit": 100,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 4
+}
