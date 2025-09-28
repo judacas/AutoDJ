@@ -83,6 +83,7 @@ python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M
 1. First run `get_playlist_songs.py` to create the playlist JSON file
 2. Install dependencies: `pip install -r requirements.txt`
 3. Install ffmpeg for audio conversion
+4. (Optional but recommended for mix downloads) Set `OPENAI_API_KEY` in your environment to enable LLM-generated mix search queries
 
 ### Features
 

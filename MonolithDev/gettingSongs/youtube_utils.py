@@ -1,19 +1,37 @@
 #!/usr/bin/env python3
-"""
-Shared utilities for YouTube downloading functionality.
+"""Shared utilities for YouTube downloading functionality.
+
 Contains common functions used by both song and mix downloaders.
 """
 
 import json
-from pathlib import Path
+import os
+import re
+import sys
 from enum import Enum
+from pathlib import Path
+from typing import List
+
 import yt_dlp
-from models import PlaylistResponse, PlaylistTrack, Track
+
 from logging_config import get_module_logger
+from models import PlaylistResponse, PlaylistTrack, Track
+
+try:
+    import openai
+except ImportError:  # pragma: no cover - dependency handled via requirements
+    openai = None
+
 
 # Set up logger for this module
 logger = get_module_logger(__name__)
-from models import PlaylistResponse, Track
+
+# Default configuration values for LLM powered query generation
+DEFAULT_MIX_QUERY_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+try:
+    DEFAULT_MIX_QUERY_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
+except ValueError:
+    DEFAULT_MIX_QUERY_TEMPERATURE = 0.7
 
 
 class QueryType(str, Enum):
@@ -80,35 +98,124 @@ def get_all_tracks_from_file(playlist_id):
         return None
 
 
-def create_search_query(track, query_type=QueryType.SONG):
-    """
-    Create a search query for YouTube based on track and query type.
+def create_song_search_query(track: Track) -> str:
+    """Create a song-focused YouTube search query for a track."""
 
-    Args:
-        track (Track): The track to search for
-        query_type (QueryType): Type of search - QueryType.SONG or QueryType.MIX
+    return (
+        f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental "
+        "-remix -live -acapella -concert -lyrics"
+    )
 
-    Returns:
-        str: Formatted search query
-    """
-    if query_type == QueryType.SONG:
-        # TODO: Improve search queries - currently finds funky results sometimes
-        # (e.g., clean versions instead of normal, still gets covers/remixes occasionally)
-        # Consider:
-        # - Adding more exclusion terms (-clean -radio -edit -version -remaster)
-        # - Prioritizing official channels/verified artists
-        # - Using multiple search strategies with fallbacks
-        # - Analyzing video duration to match track length
-        # - Checking video metadata for better matching
 
-        return f"{track.artist_names} - {track.name} -video -karaoke -cover -instrumental -remix -live -acapella -concert -lyrics"
-    elif query_type == QueryType.MIX:
-        # Placeholder for mix search query - can be customized later
-        return f"{track.artist_names} - {track.name} DJ mix"
-    else:
-        raise ValueError(
-            f"Unknown query_type: {query_type}. Must be QueryType.SONG or QueryType.MIX"
+def _extract_queries_from_llm_output(content: str) -> List[str]:
+    """Parse an LLM response into a list of clean search queries."""
+
+    queries: List[str] = []
+    for line in content.splitlines():
+        cleaned = line.strip()
+        if not cleaned:
+            continue
+        # Remove ordered list markers ("1.", "2)", etc.) and bullet characters
+        cleaned = re.sub(r"^[0-9]+[\.\)\-:]\s*", "", cleaned)
+        cleaned = cleaned.lstrip("-• ")
+        if cleaned:
+            queries.append(cleaned)
+    return queries
+
+
+def generate_mix_search_queries(track: Track, max_queries: int = 5) -> List[str]:
+    """Generate DJ mix search queries using an LLM with graceful fallbacks."""
+
+    fallback_query = f"{track.artist_names} - {track.name} DJ mix"
+
+    if openai is None:
+        logger.warning("openai package not installed; using fallback mix query.")
+        return [fallback_query]
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        logger.warning("OPENAI_API_KEY not set; using fallback mix query.")
+        return [fallback_query]
+
+    openai.api_key = api_key
+
+    system_prompt = (
+        "You write concise YouTube search queries that are likely to find DJ mixes. "
+        "Tailor the queries to the provided track's genre, artist, era, and vibe."
+    )
+    user_prompt = (
+        "Track details:\n"
+        f"Title: {track.name}\n"
+        f"Artist(s): {track.artist_names}\n"
+        f"Album: {getattr(track.album, 'name', 'Unknown')}\n\n"
+        "Return a short list of varied YouTube search queries for DJ mixes that are "
+        "very likely to contain this song. Avoid quotation marks."
+    )
+
+    try:
+        response = openai.ChatCompletion.create(
+            model=DEFAULT_MIX_QUERY_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=DEFAULT_MIX_QUERY_TEMPERATURE,
+            max_tokens=200,
+            n=1,
         )
+    except Exception as exc:  # pragma: no cover - network/LLM failures
+        logger.error(f"Error generating mix search queries via LLM: {exc}")
+        return [fallback_query]
+
+    if not response.choices:
+        logger.warning("LLM returned no choices; using fallback mix query.")
+        return [fallback_query]
+
+    first_choice = response.choices[0]
+    if hasattr(first_choice, "to_dict_recursive"):
+        first_choice = first_choice.to_dict_recursive()
+
+    if isinstance(first_choice, dict):
+        content = first_choice.get("message", {}).get("content", "")
+    else:
+        message = getattr(first_choice, "message", None)
+        if hasattr(message, "get"):
+            content = message.get("content", "")
+        else:
+            content = ""
+    queries = _extract_queries_from_llm_output(content)
+
+    if not queries:
+        logger.warning("LLM returned empty query list; using fallback mix query.")
+        queries = [fallback_query]
+
+    # Ensure deterministic fallback is always available as the last resort
+    if fallback_query not in queries:
+        queries.append(fallback_query)
+
+    # Deduplicate while preserving order and respect max_queries
+    seen = set()
+    unique_queries: List[str] = []
+    for query in queries:
+        if query not in seen:
+            seen.add(query)
+            unique_queries.append(query)
+        if len(unique_queries) >= max_queries:
+            break
+
+    return unique_queries
+
+
+def create_search_query(track, query_type=QueryType.SONG):
+    """Backward compatible helper returning the first generated query."""
+
+    if query_type == QueryType.SONG:
+        return create_song_search_query(track)
+    if query_type == QueryType.MIX:
+        return generate_mix_search_queries(track)[0]
+    raise ValueError(
+        f"Unknown query_type: {query_type}. Must be QueryType.SONG or QueryType.MIX"
+    )
 
 
 def search_youtube_for_track(track, query_type=QueryType.SONG):
@@ -122,9 +229,10 @@ def search_youtube_for_track(track, query_type=QueryType.SONG):
     Returns:
         str: YouTube URL of the best match, or None if not found
     """
-    search_query = create_search_query(track, query_type)
-
-    logger.info(f"Searching YouTube for: {search_query}")
+    if query_type == QueryType.MIX:
+        search_queries = generate_mix_search_queries(track)
+    else:
+        search_queries = [create_song_search_query(track)]
 
     # Configure yt-dlp for search
     ydl_opts = {
@@ -136,27 +244,27 @@ def search_youtube_for_track(track, query_type=QueryType.SONG):
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Search for the track
-            search_url = f"ytsearch1:{search_query}"
-            info = ydl.extract_info(search_url, download=False)
+            for search_query in search_queries:
+                logger.info(f"Searching YouTube for: {search_query}")
+                search_url = f"ytsearch1:{search_query}"
+                info = ydl.extract_info(search_url, download=False)
 
-            if info and "entries" in info and info["entries"]:
-                # Get the first (best) result
-                best_match = info["entries"][0]
-                video_url = best_match.get("webpage_url") or best_match.get("url")
+                if info and "entries" in info and info["entries"]:
+                    # Get the first (best) result
+                    best_match = info["entries"][0]
+                    video_url = best_match.get("webpage_url") or best_match.get("url")
 
-                if video_url:
-                    logger.info(
-                        f"Found YouTube video: {best_match.get('title', 'Unknown title')}"
-                    )
-                    logger.debug(f"URL: {video_url}")
-                    return video_url
-                else:
+                    if video_url:
+                        logger.info(
+                            "Found YouTube video: %s",
+                            best_match.get("title", "Unknown title"),
+                        )
+                        logger.debug("URL: %s", video_url)
+                        return video_url
                     logger.warning("No valid URL found in search results")
-                    return None
-            else:
-                logger.warning("No search results found")
-                return None
+                else:
+                    logger.warning("No search results found for query: %s", search_query)
+            return None
 
     except Exception as e:
         logger.error(f"Error searching YouTube: {e}")
