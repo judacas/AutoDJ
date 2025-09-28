@@ -248,7 +248,51 @@ def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end
     return song_start, mix_start, song_end, mix_end
 
 
+def align_core(song_chroma, mix_chroma, song_start, mix_start, song_end, mix_end, sr, trim_portion=0.25, hop_length=512):
+    """
+    Align the core matched region by trimming a portion from start and end, then using cross-correlation to find the best alignment.
+    Returns (refined_song_start, refined_mix_start, refined_song_end, refined_mix_end) in frames.
+    """
 
+    song_start = int(librosa.time_to_frames(song_start, sr=sr, hop_length=hop_length))
+    mix_start = int(librosa.time_to_frames(mix_start, sr=sr, hop_length=hop_length))
+    song_end = int(librosa.time_to_frames(song_end, sr=sr, hop_length=hop_length))
+    mix_end = int(librosa.time_to_frames(mix_end, sr=sr, hop_length=hop_length))
+
+    trim_size = int((song_end - song_start) * trim_portion)
+    if trim_size <= 0 or (song_end - song_start - 2 * trim_size) <= 0:
+        return song_start, mix_start, song_end, mix_end  # Nothing to trim
+
+    trimmed_song_start = song_start + trim_size
+    trimmed_song_end = song_end - trim_size
+
+    trimmed_song = song_chroma[:, trimmed_song_start:trimmed_song_end]
+    trimmed_song_norm = (trimmed_song - np.mean(trimmed_song)) / (np.std(trimmed_song) + 1e-8)
+    mix_segment = mix_chroma[:, mix_start:mix_end]
+    mix_segment_norm = (mix_segment - np.mean(mix_segment)) / (np.std(mix_segment) + 1e-8)
+
+    correlation = correlate(mix_segment_norm, trimmed_song_norm, mode='valid', method='fft')
+    time_correlation = np.sum(correlation, axis=0)
+    best_offset = np.argmax(time_correlation)
+    best_score = time_correlation[best_offset]
+
+    # Heuristic: set a minimum confidence threshold (tune as needed)
+    CONFIDENCE_THRESHOLD = 1000  # You may need to tune this value
+    if best_score < CONFIDENCE_THRESHOLD:
+        print("No real alignment found in core: best score below threshold.")
+        return song_start, mix_start, song_end, mix_end
+
+    trimmed_mix_start = mix_start + best_offset
+    trimmed_mix_end = trimmed_mix_start + (trimmed_song_end - trimmed_song_start)
+
+    # Clamp to valid range
+    
+    trimmed_song_start = librosa.frames_to_time(trimmed_song_start, sr=sr, hop_length=hop_length)
+    trimmed_song_end = librosa.frames_to_time(trimmed_song_end, sr=sr, hop_length=hop_length)
+    trimmed_mix_start = librosa.frames_to_time(trimmed_mix_start, sr=sr, hop_length=hop_length)
+    trimmed_mix_end = librosa.frames_to_time(trimmed_mix_end, sr=sr, hop_length=hop_length)
+    
+    return trimmed_song_start, trimmed_mix_start, trimmed_song_end, trimmed_mix_end
 
 
 def chunk_match(song_chroma, mix_chroma, sr, hop_length=512, chunk_seconds=5, n_chunks=30, buffer_seconds=30, min_chunk_factor=4):
