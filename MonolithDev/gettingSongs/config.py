@@ -71,6 +71,12 @@ def get_openai_api_key() -> Optional[str]:
     return os.getenv("OPENAI_API_KEY")
 
 
+def get_database_url() -> Optional[str]:
+    """Get Database URL (auto-initializes config if needed)."""
+    init_config()
+    return os.getenv("DATABASE_URL")
+
+
 # Constants for backward compatibility (lazy-loaded)
 SPOTIFY_CLIENT_ID = get_spotify_client_id()
 SPOTIFY_CLIENT_SECRET = get_spotify_client_secret()

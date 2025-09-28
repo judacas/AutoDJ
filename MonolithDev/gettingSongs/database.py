@@ -3,23 +3,28 @@
 from __future__ import annotations
 
 import hashlib
-import os
 from contextlib import contextmanager
 from datetime import datetime, timezone
-from typing import Iterable, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Iterable, List, Optional, Union
 
+from config import get_database_url
+from logging_config import get_module_logger
+from models import Album as AlbumModel
+from models import Artist as ArtistModel
+from models import PlaylistResponse
+from models import Track as TrackModel
 from pydantic import ValidationError
 from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
     Integer,
-    inspect,
     String,
     Text,
     UniqueConstraint,
     create_engine,
     delete,
+    inspect,
     select,
 )
 from sqlalchemy.orm import (
@@ -31,14 +36,10 @@ from sqlalchemy.orm import (
     sessionmaker,
 )
 
-from models import Album as AlbumModel
-from models import Artist as ArtistModel
-from models import PlaylistResponse, Track as TrackModel
+logger = get_module_logger(__name__)
 
 if TYPE_CHECKING:  # pragma: no cover - runtime import avoided for circular deps
     from youtube_utils import QueryType
-
-DATABASE_URL_ENV = "AUTODJ_DATABASE_URL"
 
 Base = declarative_base()
 
@@ -219,23 +220,52 @@ def _ensure_identifier(prefix: str, *candidates: Optional[str]) -> str:
     return _stable_id(prefix, candidates)
 
 
+def _mask_database_url(url: str) -> str:
+    """Mask sensitive information in database URL for safe logging."""
+    if not url or '@' not in url:
+        return url
+    
+    try:
+        parts = url.split('@')
+        if len(parts) != 2:
+            return url
+        
+        user_pass_part = parts[0]
+        host_part = parts[1]
+        
+        if ':' in user_pass_part:
+            user_pass = user_pass_part.split('://', 1)
+            if len(user_pass) == 2:
+                scheme = user_pass[0]
+                credentials = user_pass[1]
+                if ':' in credentials:
+                    user = credentials.split(':')[0]
+                    return f"{scheme}://{user}:***@{host_part}"
+        
+        return url
+    except Exception:
+        # If anything goes wrong, return a safe fallback
+        return "***masked***"
+
+
 def get_engine():
     global _engine, _SessionLocal
     if _engine is not None:
         return _engine
 
-    database_url = os.getenv(DATABASE_URL_ENV)
+    database_url = get_database_url()
     if not database_url:
         raise RuntimeError(
-            f"Database URL not configured. Set the {DATABASE_URL_ENV} environment variable."
+            f"Database URL not configured. Set the {DATABASE_URL} environment variable."
         )
-
+    logger.info("Database URL: %s", _mask_database_url(database_url))
     _engine = create_engine(database_url, future=True)
     _SessionLocal = sessionmaker(bind=_engine, autoflush=False, expire_on_commit=False)
     return _engine
 
 
 def init_db() -> None:
+    logger.info("Initializing database")
     engine = get_engine()
     Base.metadata.create_all(engine)
 
