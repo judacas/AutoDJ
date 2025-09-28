@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import librosa  # type: ignore
-import matplotlib.pyplot as plt  # type: ignore
 import numpy as np  # type: ignore
 from scipy.signal import correlate  # type: ignore
 
@@ -36,6 +35,7 @@ class AudioRecognizerConfig:
         # Refinement parameters
         self.trim_portion = 0.25
         self.min_similarity_threshold = 0.8
+        self.beats_per_measure = 4
 
 
 class AudioFingerprinter:
@@ -185,9 +185,7 @@ class AudioRecognizer:
         return start_time, end_time
 
     def recognize_song_in_mix(self, song_path: str, mix_path: str) -> dict:
-        """
-        Recognize a song within a mix with fine-tuning based on highest confidence chunk.
-        """
+        """Recognize a song within a mix and refine alignment via beat matching."""
         fingerprinter = AudioFingerprinter(self.config)
 
         # Create fingerprints
@@ -202,34 +200,27 @@ class AudioRecognizer:
         if song_chroma is None or mix_chroma is None or mix_sr is None:
             return {"success": False, "error": "Failed to create fingerprints"}
 
+        if song_sr is not None and song_sr != mix_sr:
+            self.logger.info(
+                "Song sample rate (%s) differs from mix sample rate (%s); "
+                "resampling song audio for beat alignment.",
+                song_sr,
+                mix_sr,
+            )
+
         # Find rough match
         rough_start, rough_end = self.find_rough_match(song_chroma, mix_chroma, mix_sr)
 
         if rough_start is None or rough_end is None:
             return {"success": False, "error": "No match found"}
 
-        # Generate aligned confidences to find the best reference chunk
-        self.logger.info("Generating aligned confidences for fine-tuning...")
-        (time_points, certainty_scores, reference_chunk) = (
-            self.generate_alignedConfidences(
-                song_chroma=song_chroma,
-                mix_chroma=mix_chroma,
-                sr=mix_sr,
-                song_start_time=0.0,
-                mix_start_time=rough_start,
-                song_end_time=rough_end - rough_start,
-                mix_end_time=rough_end,
-            )
-        )
-
-        # Fine-tune alignment using the reference chunk
-        refined_start, refined_end = self.fine_tune_alignment(
-            song_chroma=song_chroma,
-            mix_chroma=mix_chroma,
+        # Fine-tune alignment using beat matching to a downbeat
+        refined_start, refined_end, beat_alignment = self.fine_tune_alignment(
+            song_path=song_path,
+            mix_path=mix_path,
             sr=mix_sr,
             rough_start_time=rough_start,
             rough_end_time=rough_end,
-            reference_chunk=reference_chunk,
         )
 
         return {
@@ -238,13 +229,7 @@ class AudioRecognizer:
             "mix_path": mix_path,
             "rough_match": {"start": rough_start, "end": rough_end},
             "fine_tuned_match": {"start": refined_start, "end": refined_end},
-            "reference_chunk": reference_chunk,
-            "confidence_analysis": {
-                "time_points": time_points,
-                "certainty_scores": certainty_scores,
-                "max_certainty": max(certainty_scores) if certainty_scores else 0,
-                "avg_certainty": np.mean(certainty_scores) if certainty_scores else 0,
-            },
+            "beat_alignment": beat_alignment,
             "precise_match": {
                 "song_start": 0.0,
                 "song_end": refined_end - refined_start,
@@ -253,289 +238,121 @@ class AudioRecognizer:
             },
         }
 
-    def generate_certainty_graph(
-        self,
-        time_points: list[float],
-        certainty_scores: list[float],
-    ):
-        # Create the graph
-        plt.figure(figsize=(12, 6))
-        plt.plot(
-            time_points, certainty_scores, "b-", linewidth=2, marker="o", markersize=4
-        )
-        plt.xlabel("Time (seconds) - Aligned to Song Start")
-        plt.ylabel("Certainty Metric")
-        plt.title("Audio Alignment Certainty Over Time")
-        plt.grid(True, alpha=0.3)
-        plt.tight_layout()
-
-        # Add some statistics
-        max_certainty = max(certainty_scores) if certainty_scores else 0
-        avg_certainty = np.mean(certainty_scores) if certainty_scores else 0
-        plt.text(
-            0.02,
-            0.98,
-            f"Max Certainty: {max_certainty:.2f}\nAvg Certainty: {avg_certainty:.2f}",
-            transform=plt.gca().transAxes,
-            verticalalignment="top",
-            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.8),
-        )
-
-        # Save the graph to a file and open it immediately
-        plt.savefig("certainty_graph.png", dpi=300, bbox_inches="tight")
-        print("Graph saved as 'certainty_graph.png'")
-
-        self.logger.info(f"Graph generated with {len(time_points)} data points")
-        self.logger.info(
-            f"Max certainty: {max_certainty:.2f}, "
-            f"Average certainty: {avg_certainty:.2f}"
-        )
-
-    def generate_alignedConfidences(
-        self,
-        song_chroma: np.ndarray,
-        mix_chroma: np.ndarray,
-        sr: int,
-        song_start_time: float,
-        mix_start_time: float,
-        song_end_time: float,
-        mix_end_time: float,
-        n_chunks: int = 20,
-        overlap_percentage: float = 0.9,
-    ) -> Tuple[list[float], list[float], dict]:
-        """
-        Generate a graph showing certainty metric over time for aligned audio segments.
-
-        Args:
-            song_chroma: Source song chroma features
-            mix_chroma: Mix chroma features
-            sr: Sample rate
-            song_start_time: Start time of song segment (in seconds)
-            mix_start_time: Start time of mix segment (in seconds)
-            song_end_time: End time of song segment (in seconds)
-            mix_end_time: End time of mix segment (in seconds)
-            n_chunks: Number of chunks to divide the audio into (default 20)
-            overlap_percentage: Percentage overlap between consecutive chunks (default 0.5 = 50%)
-        """
-        self.logger.info("Generating certainty graph...")
-
-        # Convert times to frames
-        song_start_frame = librosa.time_to_frames(
-            song_start_time, sr=sr, hop_length=self.config.hop_length
-        )
-        mix_start_frame = librosa.time_to_frames(
-            mix_start_time, sr=sr, hop_length=self.config.hop_length
-        )
-        song_end_frame = librosa.time_to_frames(
-            song_end_time, sr=sr, hop_length=self.config.hop_length
-        )
-        mix_end_frame = librosa.time_to_frames(
-            mix_end_time, sr=sr, hop_length=self.config.hop_length
-        )
-
-        # Calculate the duration of the shorter segment to avoid out-of-bounds
-        min_duration_frames = min(
-            song_end_frame - song_start_frame, mix_end_frame - mix_start_frame
-        )
-
-        # Calculate chunk size based on number of chunks and overlap percentage
-        # Formula: chunk_frames = min_duration_frames / (n_chunks - (n_chunks - 1) * overlap_percentage)
-        # This accounts for the overlap reducing the effective coverage
-        effective_chunks = n_chunks - (n_chunks - 1) * overlap_percentage
-        chunk_frames = int(min_duration_frames / effective_chunks)
-
-        # Calculate step size based on overlap percentage
-        overlap_frames = int(chunk_frames * overlap_percentage)
-        step_frames = chunk_frames - overlap_frames
-
-        # Calculate the time offset (how much the song starts after the mix)
-        time_offset = song_start_time - mix_start_time
-
-        # Prepare data for plotting
-        time_points = []
-        certainty_scores = []
-
-        # Extract the relevant segments
-        song_segment = song_chroma[:, song_start_frame:song_end_frame]
-        mix_segment = mix_chroma[:, mix_start_frame:mix_end_frame]
-
-        # Debug: print segment info
-        print(f"Song segment shape: {song_segment.shape}")
-        print(f"Mix segment shape: {mix_segment.shape}")
-        print(f"Time offset: {time_offset:.2f}s")
-        print(f"Min duration frames: {min_duration_frames}")
-        print(f"Number of chunks: {n_chunks}")
-        print(f"Overlap percentage: {overlap_percentage:.1%}")
-        print(f"Chunk frames: {chunk_frames}")
-        print(f"Overlap frames: {overlap_frames}")
-        print(f"Step frames: {step_frames}")
-
-        # Store chunk information for fine-tuning analysis
-        chunk_info = []
-
-        # Slide through the segments with overlapping chunks
-        current_frame = 0
-        chunk_count = 0
-        while current_frame + chunk_frames <= min_duration_frames:
-            # Extract chunks
-            song_chunk = song_segment[:, current_frame : current_frame + chunk_frames]
-            mix_chunk = mix_segment[:, current_frame : current_frame + chunk_frames]
-
-            # Calculate certainty using cross-correlation
-            certainty = self._calculate_chunk_certainty(song_chunk, mix_chunk)
-
-            # Calculate the aligned time (subtract the offset to align with song start)
-            aligned_time = (
-                librosa.frames_to_time(
-                    current_frame + song_start_frame,
-                    sr=sr,
-                    hop_length=self.config.hop_length,
-                )
-                - time_offset
-            )
-
-            print(
-                f"Chunk {chunk_count}: aligned_time={aligned_time:.2f}s, "
-                f"certainty={certainty:.2f}"
-            )
-
-            time_points.append(aligned_time)
-            certainty_scores.append(certainty)
-
-            # Store chunk info for fine-tuning
-            chunk_info.append(
-                {
-                    "chunk_id": chunk_count,
-                    "aligned_time": aligned_time,
-                    "certainty": certainty,
-                    "song_start_frame": current_frame + song_start_frame,
-                    "mix_start_frame": current_frame + mix_start_frame,
-                    "chunk_frames": chunk_frames,
-                }
-            )
-
-            current_frame += step_frames
-            chunk_count += 1
-
-        # Find the highest confidence chunk for reference alignment
-        reference_chunk = self._find_reference_chunk(chunk_info)
-
-        self.generate_certainty_graph(time_points, certainty_scores)
-
-        return time_points, certainty_scores, reference_chunk
-
-    def _calculate_chunk_certainty(
-        self, song_chunk: np.ndarray, mix_chunk: np.ndarray
-    ) -> float:
-        """
-        Calculate certainty metric between two audio chunks using cross-correlation.
-
-        Args:
-            song_chunk: Song chroma chunk
-            mix_chunk: Mix chroma chunk
-
-        Returns:
-            Certainty score (higher = more certain)
-        """
-        # Normalize the chunks
-        song_norm = (song_chunk - np.mean(song_chunk)) / (np.std(song_chunk) + 1e-8)
-        mix_norm = (mix_chunk - np.mean(mix_chunk)) / (np.std(mix_chunk) + 1e-8)
-
-        # Calculate cross-correlation
-        correlation = correlate(mix_norm, song_norm, mode="valid", method="fft")
-        time_correlation = np.sum(correlation, axis=0)
-
-        best_match_frame = np.argmax(time_correlation)
-        best_match_score = time_correlation[best_match_frame]
-
-        # Return the maximum correlation value as certainty
-        return float(best_match_score)
-
-    def _find_reference_chunk(self, chunk_info: list[dict]) -> dict:
-        """
-        Find the chunk with the highest certainty score to use as reference.
-
-        Args:
-            chunk_info: List of chunk information dictionaries
-
-        Returns:
-            Dictionary containing reference chunk information
-        """
-        if not chunk_info:
-            return {}
-
-        # Find chunk with highest certainty
-        reference_chunk = max(chunk_info, key=lambda x: x["certainty"])
-
-        self.logger.info(
-            f"Reference chunk found: ID {reference_chunk['chunk_id']} "
-            f"at time {reference_chunk['aligned_time']:.2f}s "
-            f"with certainty {reference_chunk['certainty']:.2f}"
-        )
-
-        return reference_chunk
-
     def fine_tune_alignment(
         self,
-        song_chroma: np.ndarray,
-        mix_chroma: np.ndarray,
+        song_path: str,
+        mix_path: str,
         sr: int,
         rough_start_time: float,
         rough_end_time: float,
-        reference_chunk: dict,
-    ) -> Tuple[float, float]:
+    ) -> Tuple[float, float, dict]:
         """
-        Fine-tune alignment using the highest confidence chunk as reference.
+        Fine-tune alignment by beat matching song and mix downbeats.
 
         Args:
-            song_chroma: Source song chroma features
-            mix_chroma: Mix chroma features
-            sr: Sample rate
+            song_path: Path to the source song audio file
+            mix_path: Path to the mix audio file
+            sr: Sample rate used for analysis
             rough_start_time: Initial rough estimate start time
             rough_end_time: Initial rough estimate end time
-            reference_chunk: Reference chunk with highest confidence
 
         Returns:
-            Tuple of (refined_start_time, refined_end_time)
+            Tuple of (refined_start_time, refined_end_time, alignment_info)
         """
-        print(reference_chunk)
-        if not reference_chunk:
+
+        self.logger.info("Fine-tuning alignment using beat matching...")
+
+        try:
+            song_audio, _ = librosa.load(song_path, sr=sr)
+            mix_audio, _ = librosa.load(mix_path, sr=sr)
+        except Exception as exc:
+            self.logger.error(f"Failed to load audio for beat matching: {exc}")
+            return rough_start_time, rough_end_time, {"status": "load_failed"}
+
+        song_duration = len(song_audio) / sr
+        mix_duration = len(mix_audio) / sr
+
+        # Compute beat tracks
+        song_onset_env = librosa.onset.onset_strength(y=song_audio, sr=sr)
+        mix_onset_env = librosa.onset.onset_strength(y=mix_audio, sr=sr)
+
+        song_tempo, song_beats = librosa.beat.beat_track(
+            onset_envelope=song_onset_env, sr=sr
+        )
+        mix_tempo, mix_beats = librosa.beat.beat_track(
+            onset_envelope=mix_onset_env, sr=sr
+        )
+
+        beats_per_measure = max(1, self.config.beats_per_measure)
+
+        song_downbeat_frames = song_beats[::beats_per_measure]
+        mix_downbeat_frames = mix_beats[::beats_per_measure]
+
+        if len(song_downbeat_frames) == 0 or len(mix_downbeat_frames) == 0:
             self.logger.warning(
-                "No reference chunk provided, returning rough estimates"
+                "Beat tracking failed to find downbeats; using rough estimate."
             )
-            return rough_start_time, rough_end_time
+            return rough_start_time, rough_end_time, {
+                "status": "beat_tracking_failed",
+                "song_tempo": float(song_tempo),
+                "mix_tempo": float(mix_tempo),
+            }
 
-        self.logger.info("Fine-tuning alignment using reference chunk...")
+        song_downbeat_times = librosa.frames_to_time(
+            song_downbeat_frames, sr=sr
+        )
+        mix_downbeat_times = librosa.frames_to_time(mix_downbeat_frames, sr=sr)
 
-        # Extract chunk parameters
-        chunk_frames = reference_chunk["chunk_frames"]
-        song_chunk_start_frame = reference_chunk["song_start_frame"]
-        mix_chunk_start_frame = reference_chunk["mix_start_frame"]
+        song_downbeat_time = float(song_downbeat_times[0])
 
-        # Center a window of 3 chunks in the mix around the reference chunk
-        mix_window_start = max(0, mix_chunk_start_frame - chunk_frames)
-        mix_window_end = min(
-            mix_chroma.shape[1], mix_chunk_start_frame + chunk_frames * 2
+        # Find the downbeat in the mix closest to the rough start
+        candidate_index = np.searchsorted(mix_downbeat_times, rough_start_time)
+        candidate_times = []
+        if candidate_index < len(mix_downbeat_times):
+            candidate_times.append(float(mix_downbeat_times[candidate_index]))
+        if candidate_index > 0:
+            candidate_times.append(float(mix_downbeat_times[candidate_index - 1]))
+
+        if not candidate_times:
+            self.logger.warning(
+                "No suitable downbeat candidates near rough start; using rough estimate."
+            )
+            return rough_start_time, rough_end_time, {
+                "status": "no_downbeat_near_match",
+                "song_tempo": float(song_tempo),
+                "mix_tempo": float(mix_tempo),
+            }
+
+        mix_downbeat_time = min(
+            candidate_times, key=lambda time_value: abs(time_value - rough_start_time)
         )
 
-        # Extract the song chunk and mix window
-        song_chunk = song_chroma[
-            :, song_chunk_start_frame : song_chunk_start_frame + chunk_frames
-        ]
-        mix_window = mix_chroma[:, mix_window_start:mix_window_end]
+        refined_start_time = mix_downbeat_time - song_downbeat_time
+        refined_start_time = max(0.0, refined_start_time)
 
-        # Use find_rough_match with the chunk and window
-        chunkOffsetStart, chunkOffsetEnd = self.find_rough_match(
-            song_chunk, mix_window, sr
+        # Ensure the refined start keeps the song within the mix duration
+        if refined_start_time + song_duration > mix_duration:
+            refined_start_time = max(0.0, mix_duration - song_duration)
+
+        refined_end_time = refined_start_time + song_duration
+
+        alignment_info = {
+            "status": "aligned",
+            "song_tempo": float(song_tempo),
+            "mix_tempo": float(mix_tempo),
+            "song_downbeat_time": song_downbeat_time,
+            "mix_downbeat_time": mix_downbeat_time,
+            "beats_per_measure": beats_per_measure,
+        }
+
+        self.logger.info(
+            "Beat alignment complete: start %.2fs, end %.2fs (mix downbeat %.2fs)",
+            refined_start_time,
+            refined_end_time,
+            mix_downbeat_time,
         )
-        print(librosa.frames_to_time(chunk_frames, sr=sr))
-        chunkOffsetStart -= librosa.frames_to_time(chunk_frames, sr=sr)
-        chunkOffsetEnd -= librosa.frames_to_time(chunk_frames, sr=sr)
-        print(chunkOffsetStart, chunkOffsetEnd)
-        refined_start_time = chunkOffsetStart + mix_chunk_start_frame
-        refined_end_time = chunkOffsetEnd + mix_chunk_start_frame
 
-        return rough_start_time, rough_end_time
+        return refined_start_time, refined_end_time, alignment_info
 
 
 def main():
@@ -582,24 +399,20 @@ def main():
                 f"Fine-tuned match: {fine_tuned['start']:.2f}s to {fine_tuned['end']:.2f}s"
             )
 
-        # Show reference chunk information
-        if "reference_chunk" in result and result["reference_chunk"]:
-            ref = result["reference_chunk"]
-            print(
-                f"Reference chunk: ID {ref['chunk_id']} at {ref['aligned_time']:.2f}s "
-                + f"with certainty {ref['certainty']:.2f}"
-            )
-
-        # Show confidence analysis
-        if "confidence_analysis" in result:
-            analysis = result["confidence_analysis"]
-            print(
-                f"Confidence analysis: Max={analysis['max_certainty']:.2f}, "
-                + f"Avg={analysis['avg_certainty']:.2f}"
-            )
-
-        print("\n--- Certainty Graph Generated ---")
-        print("Graph saved as 'certainty_graph.png'")
+        # Show beat alignment details
+        if "beat_alignment" in result:
+            alignment = result["beat_alignment"]
+            status = alignment.get("status", "unknown")
+            print("Beat alignment status:", status)
+            if status == "aligned":
+                print(
+                    f"  Song downbeat at {alignment['song_downbeat_time']:.2f}s"
+                    f" aligned to mix downbeat at {alignment['mix_downbeat_time']:.2f}s"
+                )
+                print(
+                    f"  Tempos — song: {alignment['song_tempo']:.1f} BPM, "
+                    f"mix: {alignment['mix_tempo']:.1f} BPM"
+                )
     else:
         print(f"\nRecognition failed: {result.get('error', 'Unknown error')}")
 
