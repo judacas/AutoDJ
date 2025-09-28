@@ -36,10 +36,11 @@ class DualAudioPlayer:
     ) -> bool:
         """
         Play two audio files simultaneously from their respective starting points.
+        File 1 plays on the LEFT channel, File 2 plays on the RIGHT channel.
 
         Args:
-            file1_path: Path to first audio file
-            file2_path: Path to second audio file
+            file1_path: Path to first audio file (plays on LEFT channel)
+            file2_path: Path to second audio file (plays on RIGHT channel)
             start1: Start time in seconds for first file
             start2: Start time in seconds for second file
             volume1: Volume for first file (0.0 to 1.0)
@@ -90,9 +91,20 @@ class DualAudioPlayer:
             if len(audio2_int16.shape) == 1:  # Mono to stereo
                 audio2_int16 = np.column_stack((audio2_int16, audio2_int16))
 
-            # Create pygame sounds from trimmed audio
-            sound1 = pygame.sndarray.make_sound(audio1_int16)
-            sound2 = pygame.sndarray.make_sound(audio2_int16)
+            # Create stereo-panned audio
+            # File 1: Left channel only (right channel = 0)
+            audio1_stereo = np.column_stack(
+                (audio1_int16[:, 0], np.zeros_like(audio1_int16[:, 0]))
+            )
+
+            # File 2: Right channel only (left channel = 0)
+            audio2_stereo = np.column_stack(
+                (np.zeros_like(audio2_int16[:, 0]), audio2_int16[:, 0])
+            )
+
+            # Create pygame sounds from stereo-panned audio
+            sound1 = pygame.sndarray.make_sound(audio1_stereo)
+            sound2 = pygame.sndarray.make_sound(audio2_stereo)
 
             # Set volumes
             sound1.set_volume(volume1)
@@ -102,9 +114,13 @@ class DualAudioPlayer:
             sound1.play()
             sound2.play()
 
-            self.logger.info(f"Started playing {Path(file1_path).name} from {start1}s")
-            self.logger.info(f"Started playing {Path(file2_path).name} from {start2}s")
-            self.logger.info("Dual audio playback started!")
+            self.logger.info(
+                f"Started playing {Path(file1_path).name} from {start1}s (LEFT channel)"
+            )
+            self.logger.info(
+                f"Started playing {Path(file2_path).name} from {start2}s (RIGHT channel)"
+            )
+            self.logger.info("Dual audio playback started with stereo separation!")
             return True
 
         except Exception as e:
@@ -132,10 +148,11 @@ def play_dual_audio(
 ) -> bool:
     """
     Convenience function to play two audio files simultaneously.
+    File 1 plays on the LEFT channel, File 2 plays on the RIGHT channel.
 
     Args:
-        file1_path: Path to first audio file
-        file2_path: Path to second audio file
+        file1_path: Path to first audio file (plays on LEFT channel)
+        file2_path: Path to second audio file (plays on RIGHT channel)
         start1: Start time in seconds for first file
         start2: Start time in seconds for second file
         volume1: Volume for first file (0.0 to 1.0)
