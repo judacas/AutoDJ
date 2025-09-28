@@ -138,7 +138,7 @@ def find_largest_isometry(matches, chunk_size, tol=100):
             anchor_mix_start = a_mix
     return anchor_song_start, anchor_mix_start, best_indices
 
-def expand_isometry(song_chroma, mix_chroma, first_chunk_start, first_mix_start, last_chunk_start, last_mix_start, chunk_size, sim_threshold=0.7):
+def expand_isometry(song_chroma, mix_chroma, first_chunk_start, first_mix_start, last_chunk_start, last_mix_start, chunk_size, sim_threshold=0.6):
     """
     Expand only before the first matched chunk and after the last matched chunk, checking bounds.
     Returns (refined_song_start, refined_mix_start, refined_song_end, refined_mix_end)
@@ -297,7 +297,7 @@ def chunk_sim(song_idx, mix_idx, song_len, mix_len, song_chroma, mix_chroma, siz
 
 # Deprecated function
 
-def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end, mix_end, sr, hop_length=512, initial_chunk_size=0, min_chunk_factor=4, sim_threshold=0.6):
+def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end, mix_end, sr, hop_length=512, initial_chunk_size=0, min_chunk_factor=4, sim_threshold=0.8):
     """
     Refine the outer boundaries of the matched region by recursively adding or removing smaller chunks.
     - initial_chunk_size: the chunk size used in expand_isometry (in frames)
@@ -309,8 +309,10 @@ def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end
 
     song_len = song_chroma.shape[1]
     mix_len = mix_chroma.shape[1]
-    chunk_size = 2 * initial_chunk_size if initial_chunk_size > 0 else librosa.time_to_frames(2, sr=sr, hop_length=hop_length)
+    chunk_size = initial_chunk_size if initial_chunk_size > 0 else librosa.time_to_frames(2, sr=sr, hop_length=hop_length)
 
+
+    # Try to expand and trim at each scale
     temp = chunk_size
     while temp >= min_chunk_size:
         # Try to trim from start
@@ -326,7 +328,6 @@ def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end
         temp //= 2
 
     temp = chunk_size
-    # Try to expand and then trim at each scale
     while temp >= min_chunk_size:
         # Try to expand backwards
         sim_back = chunk_sim(song_start - temp, mix_start - temp, song_len, mix_len, song_chroma, mix_chroma, temp)
@@ -339,6 +340,8 @@ def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end
             song_end += temp
             mix_end += temp
         temp //= 2
+
+    
 
     # Clamp to valid range
     song_start = max(0, song_start)
