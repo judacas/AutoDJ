@@ -164,8 +164,8 @@ function App() {
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden">
-      {/* Premium Background Layer */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-zinc-900 via-black to-zinc-900" />
+      {/* Apple-inspired Premium Background Layer */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-gray-900 via-black to-gray-900" />
 
       {/* Main Content Container */}
       <div className="relative z-10">
@@ -200,12 +200,12 @@ function App() {
               <div className="glass-morphism-strong p-8 rounded-3xl shadow-strong animate-scaleIn">
                 <div className="flex flex-col items-center gap-6">
                   <div className="relative">
-                    <div className="w-16 h-16 border-4 border-zinc-700 border-t-green-500 rounded-full animate-spin" />
-                    <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-green-500/30 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
+                    <div className="w-16 h-16 border-4 border-gray-700 border-t-blue-500 rounded-full animate-spin" />
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-blue-500/30 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
                   </div>
                   <div className="text-center">
                     <h3 className="text-xl font-semibold text-white mb-2">Loading playlist...</h3>
-                    <p className="text-zinc-400">Fetching your music</p>
+                    <p className="text-gray-400">Fetching your music</p>
                   </div>
                 </div>
               </div>

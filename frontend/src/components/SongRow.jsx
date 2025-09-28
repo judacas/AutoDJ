@@ -49,13 +49,13 @@ const SongRow = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Track Number / Play Button */}
-      <div className="flex items-center justify-center w-8 text-zinc-400 group-hover:text-white">
+      <div className="flex items-center justify-center w-8 text-gray-400 group-hover:text-white">
         {isCurrentTrack && isPlaying ? (
           <button
             onClick={handlePlayButtonClick}
             className="w-4 h-4 flex items-center justify-center hover:scale-110 transition-transform"
           >
-            <Pause className="w-4 h-4 text-green-500" />
+            <Pause className="w-4 h-4 text-blue-500" />
           </button>
         ) : isHovered || isCurrentTrack ? (
           <button
@@ -65,7 +65,7 @@ const SongRow = ({
             <Play className="w-4 h-4 text-white" />
           </button>
         ) : (
-          <span className={`text-sm font-medium ${isCurrentTrack ? 'text-green-500' : 'text-zinc-400'}`}>
+          <span className={`text-sm font-medium ${isCurrentTrack ? 'text-blue-500' : 'text-gray-400'}`}>
             {(index + 1).toString().padStart(2, '0')}
           </span>
         )}
@@ -84,17 +84,17 @@ const SongRow = ({
           />
           {isCurrentTrack && (
             <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
             </div>
           )}
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className={`font-semibold truncate text-base transition-colors ${isCurrentTrack ? 'text-green-400' : 'text-white group-hover:text-green-400'
+          <div className={`font-semibold truncate text-base transition-colors ${isCurrentTrack ? 'text-blue-400' : 'text-white group-hover:text-blue-400'
             }`}>
             {song.name}
           </div>
-          <div className="text-sm text-zinc-400 truncate hover:text-zinc-300 transition-colors cursor-pointer">
+          <div className="text-sm text-gray-400 truncate hover:text-gray-300 transition-colors cursor-pointer">
             {song.artists?.map(artist => artist.name).join(', ') || 'Unknown Artist'}
           </div>
         </div>
@@ -102,7 +102,7 @@ const SongRow = ({
 
       {/* Album Name */}
       <div className="hidden md:flex items-center min-w-0">
-        <span className="text-sm text-zinc-400 truncate hover:text-white hover:underline cursor-pointer transition-colors">
+        <span className="text-sm text-gray-400 truncate hover:text-white hover:underline cursor-pointer transition-colors">
           {song.album?.name || 'Unknown Album'}
         </span>
       </div>
@@ -112,8 +112,8 @@ const SongRow = ({
         <button
           onClick={handleLikeClick}
           className={`p-1 rounded-full transition-all duration-200 hover:scale-110 ${isLiked
-              ? 'text-green-500 hover:text-green-400'
-              : 'text-zinc-500 hover:text-zinc-300 opacity-0 group-hover:opacity-100'
+            ? 'text-pink-500 hover:text-pink-400'
+            : 'text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100'
             }`}
         >
           <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
@@ -122,7 +122,7 @@ const SongRow = ({
 
       {/* Duration */}
       <div className="flex items-center justify-end w-12">
-        <span className="text-sm text-zinc-400 font-medium">
+        <span className="text-sm text-gray-400 font-medium">
           {formatDuration(song.duration_ms || 0)}
         </span>
       </div>
