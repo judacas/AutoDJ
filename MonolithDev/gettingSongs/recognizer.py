@@ -178,110 +178,7 @@ def expand_isometry(song_chroma, mix_chroma, first_chunk_start, first_mix_start,
 
     return refined_song_start, refined_mix_start, refined_song_end, refined_mix_end
 
-"""
-def confident_core_match(song_chroma, mix_chroma, sr, song_start, song_end, mix_start, mix_end, hop_length=512,trim_seconds=5):
-    
-    Given song/mix start/end (in frames), trims trim_seconds from both ends of the song region,
-    then finds the best match for that chunk anywhere in the mix.
-    Returns (core_song_start, core_song_end, best_mix_start, best_mix_end).
-    
-    # Convert trim to frames
-    trim_frames = librosa.time_to_frames(trim_seconds, sr=sr, hop_length=hop_length)
-    core_song_start = song_start + trim_frames
-    core_song_end = song_end - trim_frames
-    if core_song_end <= core_song_start:
-        raise ValueError("Trim too large for song segment length.")
 
-    # Extract the core chunk from the song
-    core_chunk = song_chroma[:, core_song_start:core_song_end]
-    # Normalize
-    core_chunk_norm = (core_chunk - np.mean(core_chunk)) / (np.std(core_chunk) + 1e-8)
-    mix_norm = (mix_chroma - np.mean(mix_chroma)) / (np.std(mix_chroma) + 1e-8)
-
-    # Cross-correlate along time axis
-    correlation = correlate(mix_norm, core_chunk_norm, mode='valid', method='fft')
-    time_correlation = np.sum(correlation, axis=0)
-    best_match_frame = np.argmax(time_correlation)
-    best_mix_start = best_match_frame
-    best_mix_end = best_mix_start + (core_song_end - core_song_start)
-
-    return core_song_start, core_song_end, best_mix_start, best_mix_end
-"""
-"""
-def confident_chunk_match(
-    song_chroma,
-    mix_chroma,
-    sr,
-    hop_length=512,
-    chunk_seconds=5,
-    n_chunks=30,
-    buffer_seconds=30,
-    min_chunk_factor=4,
-):
-    
-    High-confidence song-in-mix matcher.
-    Returns (song_start_sec, song_end_sec, mix_start_sec, mix_end_sec) for the confidently matched region.
-    
-    # Step 1: Rough estimate
-    rough_start, rough_end = find_whole_song_in_mix(song_chroma, mix_chroma, sr, hop_length=hop_length)
-    if rough_start is None:
-        print("No rough match found, cannot proceed.")
-        return None, None, None, None
-
-    # Step 2: Buffer zone in frames
-    buffer_frames = librosa.time_to_frames(buffer_seconds, sr=sr, hop_length=hop_length)
-    rough_start_frame = librosa.time_to_frames(rough_start, sr=sr, hop_length=hop_length)
-
-    # Step 3: Limit mix chroma to buffer zone
-    mix_start = max(0, rough_start_frame - buffer_frames)
-    mix_end = min(mix_chroma.shape[1], rough_start_frame + buffer_frames + song_chroma.shape[1])
-    mix_chroma_buffer = mix_chroma[:, mix_start:mix_end]
-
-    # Step 4: Chunk-based matching
-    matches = find_isometric_chunk_matches(
-        song_chroma, mix_chroma_buffer, sr, hop_length=hop_length,
-        chunk_seconds=chunk_seconds, n_chunks=n_chunks
-    )
-    # Adjust mix indices to global frame indices
-    adjusted_matches = []
-    for (i, chunk_start, best_mix_start, best_match_score) in matches:
-        adjusted_matches.append((i, chunk_start, best_mix_start + mix_start, best_match_score))
-
-    # Step 5: Find largest isometry block
-    chunk_size = librosa.time_to_frames(chunk_seconds, sr=sr, hop_length=hop_length)
-    anchor_song_start, anchor_mix_start, best_indices = find_largest_isometry(adjusted_matches, chunk_size)
-    if not best_indices:
-        print("No isometric block found.")
-        return None, None, None, None
-
-    # Step 6: Get first and last chunk in the isometry block
-    sorted_indices = sorted(best_indices, key=lambda idx: (adjusted_matches[idx][1], adjusted_matches[idx][2]))
-    first = adjusted_matches[sorted_indices[0]]
-    last = adjusted_matches[sorted_indices[-1]]
-    first_song_start, first_mix_start = first[1], first[2]
-    last_song_start, last_mix_start = last[1], last[2]
-
-    # Step 7: Expand before/after the block
-    refined_song_start, refined_mix_start, refined_song_end, refined_mix_end = expand_isometry(
-        song_chroma, mix_chroma, first_song_start, first_mix_start, last_song_start, last_mix_start, chunk_size
-    )
-
-    # Step 8: Confident core match (trims and finds best match for the core)
-    core_song_start, core_song_end, best_mix_start, best_mix_end = confident_core_match(
-        song_chroma, mix_chroma, sr,
-        refined_song_start, refined_song_end, refined_mix_start, refined_mix_end,
-        hop_length=hop_length
-    )
-
-    # Step 9: Convert to seconds
-    song_start_sec = librosa.frames_to_time(core_song_start, sr=sr, hop_length=hop_length)
-    song_end_sec = librosa.frames_to_time(core_song_end, sr=sr, hop_length=hop_length)
-    mix_start_sec = librosa.frames_to_time(best_mix_start, sr=sr, hop_length=hop_length)
-    mix_end_sec = librosa.frames_to_time(best_mix_end, sr=sr, hop_length=hop_length)
-
-    return song_start_sec, song_end_sec, mix_start_sec, mix_end_sec
-"""
-# Deprecated function
 
 # Loser helper function
 def chunk_sim(song_idx, mix_idx, song_len, mix_len, song_chroma, mix_chroma, size):
@@ -295,7 +192,7 @@ def chunk_sim(song_idx, mix_idx, song_len, mix_len, song_chroma, mix_chroma, siz
     return sim
 
 
-# Deprecated function
+
 
 def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end, mix_end, sr, hop_length=512, initial_chunk_size=0, min_chunk_factor=4, sim_threshold=0.8):
     """
@@ -352,7 +249,7 @@ def refine_outer_chunks(song_chroma, mix_chroma, song_start, mix_start, song_end
 
 
 
-# Deprecated function
+
 
 def chunk_match(song_chroma, mix_chroma, sr, hop_length=512, chunk_seconds=5, n_chunks=30, buffer_seconds=30, min_chunk_factor=4):
     """
