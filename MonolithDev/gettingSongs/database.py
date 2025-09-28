@@ -593,7 +593,7 @@ def record_download(
     query_type: Union["QueryType", str],
     youtube_id: str,
     title: Optional[str],
-    file_path: str,
+    file_uri: str,
 ) -> None:
     """Persist download metadata for auditing purposes."""
 
@@ -612,6 +612,25 @@ def record_download(
             query_type=query_value,
             youtube_id=youtube_id,
             title=title,
-            file_path=file_path,
+            file_path=file_uri,
         )
         session.add(download)
+
+
+def download_exists(
+    playlist_id: str, youtube_id: str, query_type: Union["QueryType", str]
+) -> bool:
+    """Check whether a YouTube video has already been stored for a playlist."""
+
+    init_db()
+    with session_scope() as session:
+        query_value = (
+            query_type.value if hasattr(query_type, "value") else str(query_type)
+        )
+        stmt = (
+            select(Download.id)
+            .where(Download.playlist_id == playlist_id)
+            .where(Download.youtube_id == youtube_id)
+            .where(Download.query_type == query_value)
+        )
+        return session.execute(stmt).scalar_one_or_none() is not None

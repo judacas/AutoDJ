@@ -92,10 +92,92 @@ python download_all_songs.py 37i9dQZF1DXcBWIGoYBM5M
 - **Progress Tracking**: Shows progress and summary statistics
 - **Error Handling**: Continues downloading even if individual tracks fail
 
+### Azure Blob Storage Configuration
+
+Downloaded audio is now staged locally and then uploaded to Azure Blob Storage.
+Set the following environment variables before running any download commands:
+
+| Variable | Description |
+| --- | --- |
+| `AZURE_BLOB_CONTAINER` | Name of the blob container where audio files will be stored. |
+| `AZURE_BLOB_ROOT_PATH` | Optional prefix inside the container (defaults to `playlists`). |
+| `AZURE_STORAGE_CONNECTION_STRING` | Full connection string for the storage account (preferred). |
+| `AZURE_STORAGE_ACCOUNT_URL` | Account URL when not using a connection string (e.g. `https://<account>.blob.core.windows.net`). |
+| `AZURE_STORAGE_SAS_TOKEN` / `AZURE_STORAGE_ACCOUNT_KEY` | Authentication credentials when using `AZURE_STORAGE_ACCOUNT_URL`. |
+
+If neither a connection string nor an account URL with credentials is provided, the downloader will abort with an informative error.
+
+#### Option A – Provisioning via Azure Portal
+
+1. Create a **Storage Account** (Standard V2) in the Azure Portal.
+2. Inside the storage account, create a **Blob Container** for AutoDJ audio (e.g. `autodj-audio`).
+3. Generate credentials:
+   - Either copy the **Connection string** from **Access keys**, or
+   - Generate a **SAS token** from the container (ensure `Create` and `Write` permissions).
+4. Export the variables locally:
+
+```bash
+export AZURE_BLOB_CONTAINER="autodj-audio"
+export AZURE_STORAGE_CONNECTION_STRING="<portal-connection-string>"
+# Optional: override the folder prefix inside the container
+export AZURE_BLOB_ROOT_PATH="playlists"
+```
+
+5. Run the playlist pipeline as usual. The Postgres `downloads` table now stores the blob URL instead of a local file path.
+
+#### Option B – Provisioning via Azure CLI
+
+```bash
+# Log in and choose a subscription
+az login
+az account set --subscription "<subscription-name-or-id>"
+
+# Variables
+RESOURCE_GROUP="autodj-rg"
+LOCATION="eastus"
+STORAGE_ACCOUNT="autodjstorage$RANDOM"
+CONTAINER="autodj-audio"
+
+# Create resource group & storage
+az group create --name "$RESOURCE_GROUP" --location "$LOCATION"
+az storage account create \
+  --resource-group "$RESOURCE_GROUP" \
+  --name "$STORAGE_ACCOUNT" \
+  --sku Standard_LRS \
+  --kind StorageV2
+
+# Create container and fetch connection string
+az storage container create \
+  --name "$CONTAINER" \
+  --account-name "$STORAGE_ACCOUNT"
+
+CONNECTION_STRING=$(az storage account show-connection-string \
+  --name "$STORAGE_ACCOUNT" \
+  --resource-group "$RESOURCE_GROUP" \
+  --query connectionString -o tsv)
+
+export AZURE_BLOB_CONTAINER="$CONTAINER"
+export AZURE_STORAGE_CONNECTION_STRING="$CONNECTION_STRING"
+```
+
+You can substitute the connection string with a SAS token instead:
+
+```bash
+SAS_TOKEN=$(az storage container generate-sas \
+  --name "$CONTAINER" \
+  --account-name "$STORAGE_ACCOUNT" \
+  --permissions acdlrw \
+  --expiry "$(date -u -d '+30 days' +%Y-%m-%dT%H:%MZ)" \
+  -o tsv)
+
+export AZURE_STORAGE_ACCOUNT_URL="https://$STORAGE_ACCOUNT.blob.core.windows.net"
+export AZURE_STORAGE_SAS_TOKEN="?$SAS_TOKEN"
+```
+
 ### Output
 
 The script will:
-- Download MP3 files to the `downloads/` directory
-- Use filenames with YouTube ID for uniqueness: `{youtube_id}__{title}.mp3`
+- Upload MP3 files to Azure Blob Storage under `<root_path>/<playlist_id>/<query_type>/`
+- Store the resulting blob URL in Postgres for traceability
 - Show progress for each track
 - Display a final summary with success/failure counts
