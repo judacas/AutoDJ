@@ -34,7 +34,7 @@ def main():
     downloader = YouTubeDownloader()
     try:
         summary = downloader.download_playlist(playlist_id, query_type)
-    except ValueError as exc:
+    except (ValueError, RuntimeError) as exc:
         print(f"Failed to download tracks: {exc}")
         sys.exit(1)
 

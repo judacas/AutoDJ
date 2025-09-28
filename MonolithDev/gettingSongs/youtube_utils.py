@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import tempfile
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -14,6 +15,7 @@ import yt_dlp
 from dj_LLM import DJQueryGenerator
 from logging_config import get_module_logger
 import database
+from azure_blob_storage import AzureBlobStorage, AzureBlobStorageError
 from models import Track
 
 logger = get_module_logger(__name__)
@@ -75,13 +77,21 @@ def extract_youtube_id(video_url: str) -> str:
     return "unknown_id"
 
 
-def is_track_downloaded(youtube_id: str, output_dir: Path | str = "downloads") -> bool:
-    """Determine whether a YouTube video has already been downloaded."""
+def has_existing_download(
+    playlist_id: str, youtube_id: str, query_type: QueryType
+) -> bool:
+    """Check the database for an existing download record."""
 
-    output_path = Path(output_dir)
-    if not output_path.exists():
+    try:
+        return database.download_exists(playlist_id, youtube_id, query_type)
+    except Exception as exc:  # pragma: no cover - defensive logging
+        logger.warning(
+            "Unable to determine if %s is already stored for playlist %s: %s",
+            youtube_id,
+            playlist_id,
+            exc,
+        )
         return False
-    return any(output_path.glob(f"{youtube_id}__*"))
 
 
 def download_audio_from_youtube(
@@ -127,9 +137,20 @@ def download_audio_from_youtube(
 class YouTubeDownloader:
     """Handle searching for and downloading tracks from YouTube."""
 
-    def __init__(self, output_dir: str = "downloads") -> None:
-        self.output_dir = Path(output_dir)
+    def __init__(
+        self,
+        output_dir: str = "downloads",
+        storage: Optional[AzureBlobStorage] = None,
+    ) -> None:
+        self._staging_root = Path(output_dir)
+        self._staging_root.mkdir(parents=True, exist_ok=True)
         self._mix_generator: Optional[DJQueryGenerator] = None
+        try:
+            self.storage = storage or AzureBlobStorage.from_env()
+        except AzureBlobStorageError as exc:
+            raise RuntimeError(
+                "Azure Blob Storage is not configured correctly."
+            ) from exc
 
     def download_playlist(
         self,
@@ -146,16 +167,23 @@ class YouTubeDownloader:
         )
         summary = DownloadSummary(total_tracks=len(tracks))
 
-        target_dir = self.output_dir / (
-            "mixes" if query_type == QueryType.MIX else "originals"
-        )
-        target_dir.mkdir(parents=True, exist_ok=True)
-
-        for index, track in enumerate(tracks, start=1):
-            logger.info(f"\n--- Track {index}/{len(tracks)}: {track} ---")
-            self._download_for_track(
-                playlist_id, track, query_type, per_track_limit, summary, target_dir
+        with tempfile.TemporaryDirectory(dir=self._staging_root) as staging_dir:
+            staging_path = Path(staging_dir)
+            target_dir = staging_path / (
+                "mixes" if query_type == QueryType.MIX else "originals"
             )
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            for index, track in enumerate(tracks, start=1):
+                logger.info(f"\n--- Track {index}/{len(tracks)}: {track} ---")
+                self._download_for_track(
+                    playlist_id,
+                    track,
+                    query_type,
+                    per_track_limit,
+                    summary,
+                    target_dir,
+                )
 
         return summary
 
@@ -194,7 +222,7 @@ class YouTubeDownloader:
                 youtube_id = extract_youtube_id(video_url)
                 summary.requested_downloads += 1
 
-                if is_track_downloaded(youtube_id, target_dir):
+                if has_existing_download(playlist_id, youtube_id, query_type):
                     logger.info(
                         f"⏭️  Already downloaded, skipping: {result.get('title', 'Unknown title')}"
                     )
@@ -203,7 +231,22 @@ class YouTubeDownloader:
 
                 file_path = download_audio_from_youtube(video_url, target_dir)
                 if file_path:
-                    logger.info(f"✅ Successfully downloaded: {file_path}")
+                    try:
+                        blob_url = self.storage.upload_file(
+                            playlist_id=playlist_id,
+                            query_type=query_type.value,
+                            local_path=Path(file_path),
+                        )
+                    except Exception as exc:  # pragma: no cover - Azure SDK runtime issues
+                        logger.error(
+                            "❌ Failed to upload %s to Azure Blob Storage: %s",
+                            file_path,
+                            exc,
+                        )
+                        summary.failed_downloads += 1
+                        continue
+
+                    logger.info(f"✅ Successfully uploaded to Azure: {blob_url}")
                     summary.successful_downloads += 1
                     downloads_for_track += 1
                     database.record_download(
@@ -212,8 +255,12 @@ class YouTubeDownloader:
                         query_type=query_type,
                         youtube_id=youtube_id,
                         title=result.get("title"),
-                        file_path=file_path,
+                        file_uri=blob_url,
                     )
+                    try:
+                        Path(file_path).unlink(missing_ok=True)
+                    except OSError:
+                        logger.debug("Unable to remove temporary file %s", file_path)
                 else:
                     logger.error(f"❌ Failed to download: {video_url}")
                     summary.failed_downloads += 1
@@ -280,7 +327,7 @@ def download_tracks_from_playlist(
         summary = downloader.download_playlist(
             playlist_id, query_type, max_results_per_track=max_results_per_track
         )
-    except ValueError as exc:
+    except (ValueError, RuntimeError) as exc:
         logger.error(str(exc))
         return None
 
