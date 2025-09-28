@@ -20,7 +20,7 @@ pydantic == 2.11
 yt-dlp==2025.9.26
 
 # OpenAI Integration
-openai==1.49.0
+openai==1.109.1
 
 # Development Tools
 autopep8==2.0.4
