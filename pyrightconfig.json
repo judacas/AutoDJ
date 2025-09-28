@@ -1,10 +1,11 @@
 {
     "include": [
         "MonolithDev",
-        "graphStuff"
+        "graphStuff",
     ],
     "extraPaths": [
-        "MonolithDev/gettingSongs"
+        "MonolithDev/gettingSongs",
+        "MonolithDev/recognizingStuff"
     ],
     "pythonVersion": "3.13"
 }

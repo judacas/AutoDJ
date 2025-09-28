@@ -5,7 +5,13 @@
             "label": "AutoDJ: Setup Environment",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "pip", "install", "-r", "requirements.txt"],
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                "requirements.txt"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -19,8 +25,39 @@
             "label": "AutoDJ: Run Tests",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "pytest", ".", "-v", "--cov=MonolithDev", "--cov=graphStuff", "--cov-report=html"],
+            "args": [
+                "-m",
+                "pytest",
+                ".",
+                "-v",
+                "--cov=MonolithDev",
+                "--cov=graphStuff",
+                "--cov=MonolithDev/recognizingStuff",
+                "--cov-report=html"
+            ],
             "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Lint Code (Auto-fix)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "flake8",
+                "--max-line-length=88",
+                "--extend-ignore=E203,W503",
+                "MonolithDev/",
+                "graphStuff/",
+                "MonolithDev/recognizingStuff/"
+            ],
+            "group": "build",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -33,7 +70,13 @@
             "label": "AutoDJ: Lint Code",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "flake8", "MonolithDev/", "graphStuff/"],
+            "args": [
+                "-m",
+                "flake8",
+                "MonolithDev/",
+                "graphStuff/",
+                "MonolithDev/recognizingStuff/"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -47,7 +90,12 @@
             "label": "AutoDJ: Type Check",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "mypy", "MonolithDev/"],
+            "args": [
+                "-m",
+                "mypy",
+                "MonolithDev/",
+                "MonolithDev/recognizingStuff/"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -61,7 +109,13 @@
             "label": "AutoDJ: Format Code",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "black", "MonolithDev/", "graphStuff/"],
+            "args": [
+                "-m",
+                "black",
+                "MonolithDev/",
+                "graphStuff/",
+                "MonolithDev/recognizingStuff/"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -75,7 +129,53 @@
             "label": "AutoDJ: Sort Imports",
             "type": "shell",
             "command": "python",
-            "args": ["-m", "isort", "MonolithDev/", "graphStuff/"],
+            "args": [
+                "-m",
+                "isort",
+                "MonolithDev/",
+                "graphStuff/",
+                "MonolithDev/recognizingStuff/"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Auto-fix All Issues",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "black",
+                "--line-length=88",
+                "MonolithDev/",
+                "graphStuff/",
+                "MonolithDev/recognizingStuff/"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AutoDJ: Run Audio Recognition",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "MonolithDev/recognizingStuff/main.py"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -89,6 +189,7 @@
             "label": "AutoDJ: Run All Checks & Format",
             "dependsOrder": "sequence",
             "dependsOn": [
+                "AutoDJ: Auto-fix All Issues",
                 "AutoDJ: Format Code",
                 "AutoDJ: Sort Imports",
                 "AutoDJ: Lint Code",

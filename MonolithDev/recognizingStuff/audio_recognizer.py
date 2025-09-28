@@ -1,0 +1,261 @@
+"""
+Audio Recognition System
+A consolidated script for finding songs within audio mixes using chroma-based
+fingerprinting.
+"""
+
+import logging
+from pathlib import Path
+from typing import Optional, Tuple
+
+import librosa  # type: ignore
+import numpy as np  # type: ignore
+from scipy.signal import correlate  # type: ignore
+
+logger = logging.getLogger(__name__)
+
+
+class AudioRecognizerConfig:
+    """Configuration class for audio recognition parameters."""
+
+    def __init__(self):
+        # Audio processing parameters
+        self.hop_length = 512
+        self.chunk_seconds = 5
+        self.n_chunks = 30
+        self.buffer_seconds = 30
+        self.min_chunk_factor = 4
+
+        # Matching thresholds
+        self.confidence_threshold_rough = 10000
+        self.confidence_threshold_core = 1000
+        self.similarity_threshold = 0.6
+        self.isometry_tolerance = 100
+
+        # Refinement parameters
+        self.trim_portion = 0.25
+        self.min_similarity_threshold = 0.8
+
+
+class AudioFingerprinter:
+    """Handles audio fingerprinting using chroma features."""
+
+    def __init__(self, config: AudioRecognizerConfig):
+        self.config = config
+        self.logger = logging.getLogger(__name__)
+
+    def create_fingerprint(
+        self, audio_file: str
+    ) -> Tuple[Optional[np.ndarray], Optional[int]]:
+        """
+        Create chroma-based fingerprint from audio file.
+
+        Args:
+            audio_file: Path to audio file
+
+        Returns:
+            Tuple of (chroma_features, sample_rate) or (None, None) if error
+        """
+        try:
+            preloaded_fingerprint = self.load_fingerprint(
+                self.get_fingerprint_path(audio_file)
+            )
+            if (
+                preloaded_fingerprint[0] is not None
+                and preloaded_fingerprint[1] is not None
+            ):
+                return preloaded_fingerprint
+        except Exception:
+            self.logger.info("preloaded fingerprint not found, creating new one")
+
+        audio_path = Path(audio_file)
+        if not audio_path.exists():
+            self.logger.error(f"Audio file not found: {audio_file}")
+            return None, None
+
+        try:
+            self.logger.info(f"Fingerprinting '{audio_file}'...")
+            y, sr = librosa.load(audio_file, sr=None)
+            chroma = librosa.feature.chroma_stft(
+                y=y, sr=sr, hop_length=self.config.hop_length
+            )
+            self.logger.info("Fingerprinting complete.")
+            self.save_fingerprint(
+                chroma, int(sr), self.get_fingerprint_path(audio_file)
+            )
+
+            return chroma, int(sr)
+        except Exception as e:
+            self.logger.error(f"Error processing {audio_file}: {e}")
+            return None, None
+
+    def get_fingerprint_path(self, audio_file: str) -> str:
+        """Get the path to the fingerprint file, using only the base filename."""
+        from pathlib import Path
+
+        base_name = Path(audio_file).name
+        return f"fingerprints/{base_name}.npz"
+
+    def save_fingerprint(
+        self, chroma: Optional[np.ndarray], sr: Optional[int], file_path: str
+    ) -> bool:
+        """Save fingerprint data to file."""
+        if chroma is None or sr is None:
+            self.logger.error("Cannot save fingerprint: chroma or sr is None")
+            return False
+
+        try:
+            np.savez(file_path, chroma=chroma, sr=sr)
+            self.logger.info(f"Fingerprint saved to {file_path}.npz")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error saving fingerprint: {e}")
+            return False
+
+    def load_fingerprint(
+        self, file_path: str
+    ) -> Tuple[Optional[np.ndarray], Optional[int]]:
+        """Load fingerprint from file."""
+        try:
+            with np.load(file_path) as data:
+                return data["chroma"], data["sr"]
+        except Exception as e:
+            self.logger.error(f"Error loading fingerprint: {e}")
+            return None, None
+
+
+class AudioRecognizer:
+    """Main audio recognition engine."""
+
+    def __init__(self, config: AudioRecognizerConfig):
+        self.config = config
+        self.logger = logging.getLogger(__name__)
+
+    def find_rough_match(
+        self, song_chroma: np.ndarray, mix_chroma: np.ndarray, sr: Optional[int]
+    ) -> Tuple[Optional[float], Optional[float]]:
+        """
+        Find rough estimate of song location in mix using cross-correlation.
+
+        Args:
+            song_chroma: Source song chroma features
+            mix_chroma: Mix chroma features
+            sr: Sample rate
+
+        Returns:
+            Tuple of (start_time, end_time) or (None, None) if no match
+        """
+        if sr is None:
+            self.logger.error("Sample rate is None, cannot find rough match")
+            return None, None
+
+        self.logger.info("Searching for rough song match in mix...")
+
+        # Normalize features
+        song_norm = (song_chroma - np.mean(song_chroma)) / np.std(song_chroma)
+        mix_norm = (mix_chroma - np.mean(mix_chroma)) / np.std(mix_chroma)
+
+        # Cross-correlation
+        correlation = correlate(mix_norm, song_norm, mode="valid", method="fft")
+        time_correlation = np.sum(correlation, axis=0)
+        best_match_frame = np.argmax(time_correlation)
+        best_match_score = time_correlation[best_match_frame]
+
+        self.logger.info(f"Best match score: {best_match_score:.2f}")
+
+        if best_match_score < self.config.confidence_threshold_rough:
+            self.logger.warning(
+                "No real match found: best match score below threshold."
+            )
+            return None, None
+
+        start_time = librosa.frames_to_time(
+            best_match_frame, sr=sr, hop_length=self.config.hop_length
+        ).item()
+        song_duration_frames = song_chroma.shape[1]
+        song_duration_secs = librosa.frames_to_time(
+            song_duration_frames, sr=sr, hop_length=self.config.hop_length
+        ).item()
+        end_time = start_time + song_duration_secs
+
+        self.logger.info(
+            f"Rough match found! Start: {start_time:.2f}s, End: {end_time:.2f}s"
+        )
+        return start_time, end_time
+
+    def recognize_song_in_mix(self, song_path: str, mix_path: str) -> dict:
+        """Recognize a song within a mix."""
+        fingerprinter = AudioFingerprinter(self.config)
+
+        # Create fingerprints
+        self.logger.info(f"Creating fingerprints for {song_path} and {mix_path}")
+        song_chroma, song_sr = fingerprinter.create_fingerprint(song_path)
+        self.logger.info(f"Fingerprint created for {song_path}")
+
+        self.logger.info(f"Creating fingerprints for {mix_path}")
+        mix_chroma, mix_sr = fingerprinter.create_fingerprint(mix_path)
+        self.logger.info(f"Fingerprints created for {song_path} and {mix_path}")
+
+        if song_chroma is None or mix_chroma is None:
+            return {"success": False, "error": "Failed to create fingerprints"}
+
+        # Find rough match
+        rough_start, rough_end = self.find_rough_match(song_chroma, mix_chroma, mix_sr)
+
+        if rough_start is None or rough_end is None:
+            return {"success": False, "error": "No match found"}
+
+        return {
+            "success": True,
+            "song_path": song_path,
+            "mix_path": mix_path,
+            "rough_match": {"start": rough_start, "end": rough_end},
+            "precise_match": {
+                "song_start": 0.0,
+                "song_end": rough_end - rough_start,
+                "mix_start": rough_start,
+                "mix_end": rough_end,
+            },
+        }
+
+
+def main():
+    """Main function to run the audio recognition pipeline."""
+
+    # Configuration
+    config = AudioRecognizerConfig()
+
+    SOURCE_SONG_PATH = "downloads\originals\Bt71DPAcWXM__UWAIE - KAPO - SALSATION® choreography by Alejandro Angulo.mp3"
+    MIX_PATH = "downloads\PbB_dF7Hetc__Fiesta Latina Mix 2024 ｜ Latin Party Mix 2024 ｜ The Best Latin Party Hits by OSOCITY.mp3"  # Fixed: was .wav
+
+    # Create pipeline
+    pipeline = AudioRecognizer(config)
+
+    # Run recognition
+    result = pipeline.recognize_song_in_mix(SOURCE_SONG_PATH, MIX_PATH)
+
+    # Print results
+    if result["success"]:
+        print("\n--- 🎵 Recognition Results 🎵 ---")
+        print(f"Source song: {result['song_path']}")
+        print(f"Mix: {result['mix_path']}")
+
+        if "rough_match" in result and result["rough_match"]["start"] is not None:
+            rough = result["rough_match"]
+            print(f"Rough match: {rough['start']:.2f}s to {rough['end']:.2f}s")
+
+        if "precise_match" in result:
+            precise = result["precise_match"]
+            print(f"Precise match:")
+            print(
+                f"  Song segment: {precise['song_start']:.2f}s to {precise['song_end']:.2f}s"
+            )
+            print(
+                f"  Mix segment: {precise['mix_start']:.2f}s to {precise['mix_end']:.2f}s"
+            )
+    else:
+        print(f"\n❌ Recognition failed: {result.get('error', 'Unknown error')}")
+
+
+if __name__ == "__main__":
+    main()
